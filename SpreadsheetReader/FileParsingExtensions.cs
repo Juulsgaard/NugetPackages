@@ -1,8 +1,8 @@
-﻿using Lib.FileParsing.Interfaces;
-using Lib.FileParsing.Models;
-using Lib.Helpers;
+﻿using SpreadsheetReader.Interfaces;
+using SpreadsheetReader.Models;
+using Tools.Helpers;
 
-namespace Lib.FileParsing;
+namespace SpreadsheetReader;
 
 public static class FileParsingExtensions
 {

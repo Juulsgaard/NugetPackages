@@ -1,4 +1,4 @@
-﻿namespace Data.Importers;
+﻿namespace SpreadsheetReader.Enums;
 
 public enum ImportTextType
 {

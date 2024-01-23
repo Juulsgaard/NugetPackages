@@ -1,6 +1,6 @@
 ﻿using System.Linq.Expressions;
-using Lib.Extensions;
-using Shared.Interfaces;
+using Crud.Domain.Interfaces;
+using Crud.Extensions;
 
 namespace Crud.Builders.Extensions;
 

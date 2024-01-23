@@ -1,6 +1,6 @@
 ﻿using System.Linq.Expressions;
+using Crud.Domain.Interfaces;
 using Crud.Monitoring;
-using Shared.Interfaces;
 
 namespace Crud.Builders.Extensions;
 

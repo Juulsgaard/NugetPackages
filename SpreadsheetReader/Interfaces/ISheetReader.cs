@@ -1,6 +1,6 @@
-﻿using Lib.FileParsing.Models;
+﻿using SpreadsheetReader.Models;
 
-namespace Lib.FileParsing.Interfaces;
+namespace SpreadsheetReader.Interfaces;
 
 internal interface ISheetReader : IDisposable
 {

@@ -1,10 +1,10 @@
-﻿using Lib.Exceptions;
-using Lib.FileParsing.Interfaces;
-using Lib.FileParsing.Readers;
-using Lib.FileTypes;
-using Serilog;
+﻿using Serilog;
+using SpreadsheetReader.Interfaces;
+using SpreadsheetReader.Readers;
+using Tools.Exceptions;
+using Tools.FileTypes;
 
-namespace Lib.FileParsing;
+namespace SpreadsheetReader;
 
 public class SheetReaderFactory
 {

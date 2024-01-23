@@ -4,7 +4,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace Shared.Extensions;
+namespace Tools.Extensions;
 
 public static class StringExtensions
 {

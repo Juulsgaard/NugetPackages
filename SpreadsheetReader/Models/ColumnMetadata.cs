@@ -1,4 +1,4 @@
-﻿namespace Lib.FileParsing.Models;
+﻿namespace SpreadsheetReader.Models;
 
 public class ColumnMetadata
 {

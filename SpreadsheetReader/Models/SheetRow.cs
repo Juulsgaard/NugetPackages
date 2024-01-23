@@ -1,7 +1,7 @@
 ﻿using System.Collections;
-using Lib.Exceptions;
+using Tools.Exceptions;
 
-namespace Lib.FileParsing.Models;
+namespace SpreadsheetReader.Models;
 
 public class SheetRow : IEnumerable<SheetValue?>
 {

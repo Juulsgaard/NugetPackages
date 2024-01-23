@@ -1,5 +1,5 @@
 ﻿using System.Linq.Expressions;
-using Shared.Interfaces;
+using Crud.Domain.Interfaces;
 
 namespace Crud.Builders.Extensions;
 

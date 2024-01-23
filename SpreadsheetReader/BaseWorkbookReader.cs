@@ -1,10 +1,10 @@
 ﻿using System.Collections;
-using Lib.Exceptions;
-using Lib.FileParsing.Interfaces;
-using Lib.FileParsing.Models;
-using Shared.Extensions;
+using SpreadsheetReader.Interfaces;
+using SpreadsheetReader.Models;
+using Tools.Exceptions;
+using Tools.Extensions;
 
-namespace Lib.FileParsing;
+namespace SpreadsheetReader;
 
 internal abstract class BaseWorkbookReader : IWorkbookReader
 {

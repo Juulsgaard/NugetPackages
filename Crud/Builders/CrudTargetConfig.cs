@@ -1,14 +1,15 @@
 using System.Linq.Expressions;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
+using Crud.Exceptions;
+using Crud.Extensions;
 using Crud.Helpers;
 using Crud.Models;
-using Lib.Exceptions;
-using Lib.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage;
+using Tools.Exceptions;
 
 namespace Crud.Builders;
 

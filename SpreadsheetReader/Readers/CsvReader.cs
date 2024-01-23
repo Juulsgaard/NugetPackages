@@ -1,9 +1,9 @@
 ﻿using System.Globalization;
 using CsvHelper.Configuration;
-using Lib.FileParsing.Interfaces;
-using Lib.FileParsing.Models;
+using SpreadsheetReader.Interfaces;
+using SpreadsheetReader.Models;
 
-namespace Lib.FileParsing.Readers;
+namespace SpreadsheetReader.Readers;
 
 internal class CsvReader : ISheetReader
 {

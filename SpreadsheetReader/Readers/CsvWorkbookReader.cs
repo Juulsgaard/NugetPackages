@@ -1,8 +1,8 @@
-﻿using Lib.Exceptions;
-using Lib.FileParsing.Interfaces;
-using Lib.FileParsing.Models;
+﻿using SpreadsheetReader.Interfaces;
+using SpreadsheetReader.Models;
+using Tools.Exceptions;
 
-namespace Lib.FileParsing.Readers;
+namespace SpreadsheetReader.Readers;
 
 internal class CsvWorkbookReader : BaseWorkbookReader
 {

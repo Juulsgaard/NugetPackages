@@ -1,6 +1,6 @@
 ﻿using System.Net;
 
-namespace Lib.Exceptions;
+namespace Tools.Exceptions;
 
 public class AuthenticationException : CustomException
 {

@@ -1,6 +1,6 @@
 ﻿using System.Net;
 
-namespace Lib.Exceptions;
+namespace Tools.Exceptions;
 
 public abstract class CustomException : Exception
 {

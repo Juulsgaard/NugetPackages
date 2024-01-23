@@ -1,11 +1,12 @@
 using System.Linq.Expressions;
 using AutoMapper;
+using Crud.Domain.Interfaces;
+using Crud.Exceptions;
 using Crud.Models;
 using Crud.Transactions;
-using Lib.Exceptions;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
-using Shared.Interfaces;
+using Tools.Exceptions;
 
 namespace Crud.Builders;
 

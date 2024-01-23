@@ -1,6 +1,6 @@
-﻿using Shared.Extensions;
+﻿using Tools.Extensions;
 
-namespace Lib.FileParsing.Models;
+namespace SpreadsheetReader.Models;
 
 public class SheetInfo
 {

@@ -1,4 +1,4 @@
-namespace Lib.FileTypes;
+namespace Tools.FileTypes;
 
 public class FileType<TEnum> where TEnum : struct, Enum
 {

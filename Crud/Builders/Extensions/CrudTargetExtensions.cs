@@ -1,4 +1,4 @@
-﻿using Shared.Interfaces;
+﻿using Crud.Domain.Interfaces;
 
 namespace Crud.Builders.Extensions;
 

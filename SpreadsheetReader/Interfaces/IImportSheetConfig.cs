@@ -1,4 +1,4 @@
-﻿namespace Lib.FileParsing.Interfaces;
+﻿namespace SpreadsheetReader.Interfaces;
 
 public interface IImportSheetConfig
 {

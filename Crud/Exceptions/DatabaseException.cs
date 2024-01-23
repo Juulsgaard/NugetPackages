@@ -1,6 +1,7 @@
 ﻿using System.Net;
+using Tools.Exceptions;
 
-namespace Lib.Exceptions;
+namespace Crud.Exceptions;
 
 public class DatabaseException : CustomException
 {

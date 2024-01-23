@@ -1,4 +1,4 @@
-﻿namespace Lib.Helpers;
+﻿namespace Tools.Helpers;
 
 public class Maybe<T> : Maybe
 {

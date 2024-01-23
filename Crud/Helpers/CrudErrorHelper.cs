@@ -1,5 +1,5 @@
 using System.Linq.Expressions;
-using Lib.Exceptions;
+using Tools.Exceptions;
 
 namespace Crud.Helpers;
 

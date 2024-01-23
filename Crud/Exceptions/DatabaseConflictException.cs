@@ -1,7 +1,7 @@
 ﻿using System.Net;
-using Lib.Extensions;
+using Tools.Extensions;
 
-namespace Lib.Exceptions;
+namespace Crud.Exceptions;
 
 public class DatabaseConflictException : DatabaseException
 {

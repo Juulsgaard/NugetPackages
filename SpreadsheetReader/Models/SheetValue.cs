@@ -1,9 +1,9 @@
 ﻿using System.Globalization;
-using Data.Importers;
 using Serilog;
-using Shared.Extensions;
+using SpreadsheetReader.Enums;
+using Tools.Extensions;
 
-namespace Lib.FileParsing.Models;
+namespace SpreadsheetReader.Models;
 
 public record SheetValue(ISheetColumn Column, string Value, int RowNum)
 {

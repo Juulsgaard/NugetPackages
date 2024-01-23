@@ -1,6 +1,6 @@
 ﻿using System.Collections;
 
-namespace Lib.Extensions;
+namespace Tools.Extensions;
 
 public static class DictionaryExtensions
 {

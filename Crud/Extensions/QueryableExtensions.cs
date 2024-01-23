@@ -1,7 +1,7 @@
 ﻿using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 
-namespace Lib.Extensions;
+namespace Crud.Extensions;
 
 public static class QueryableExtensions
 {
