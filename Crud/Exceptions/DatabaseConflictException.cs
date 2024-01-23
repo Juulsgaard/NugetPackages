@@ -1,7 +1,7 @@
 ﻿using System.Net;
-using Tools.Extensions;
+using Juulsgaard.Tools.Extensions;
 
-namespace Crud.Exceptions;
+namespace Juulsgaard.Crud.Exceptions;
 
 public class DatabaseConflictException : DatabaseException
 {

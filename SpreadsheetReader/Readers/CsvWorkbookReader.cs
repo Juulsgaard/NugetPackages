@@ -1,8 +1,8 @@
-﻿using SpreadsheetReader.Interfaces;
-using SpreadsheetReader.Models;
-using Tools.Exceptions;
+﻿using Juulsgaard.SpreadsheetReader.Interfaces;
+using Juulsgaard.SpreadsheetReader.Models;
+using Juulsgaard.Tools.Exceptions;
 
-namespace SpreadsheetReader.Readers;
+namespace Juulsgaard.SpreadsheetReader.Readers;
 
 internal class CsvWorkbookReader : BaseWorkbookReader
 {

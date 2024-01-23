@@ -1,4 +1,4 @@
-namespace Tools.FileTypes;
+namespace Juulsgaard.Tools.FileTypes;
 
 public class FileTypeList<TEnum> : List<FileType<TEnum>> where TEnum : struct, Enum
 {

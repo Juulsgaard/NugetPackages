@@ -1,4 +1,4 @@
-﻿namespace Crud.Models;
+﻿namespace Juulsgaard.Crud.Models;
 
 public class CrudExceptionLookup
 {

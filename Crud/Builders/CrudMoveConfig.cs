@@ -1,14 +1,14 @@
 using System.Linq.Expressions;
 using AutoMapper;
-using Crud.Domain.Interfaces;
-using Crud.Exceptions;
-using Crud.Models;
-using Crud.Transactions;
+using Juulsgaard.Crud.Domain.Interfaces;
+using Juulsgaard.Crud.Exceptions;
+using Juulsgaard.Crud.Models;
+using Juulsgaard.Crud.Transactions;
+using Juulsgaard.Tools.Exceptions;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
-using Tools.Exceptions;
 
-namespace Crud.Builders;
+namespace Juulsgaard.Crud.Builders;
 
 /// <summary>
 /// This is the config for moving an Entity

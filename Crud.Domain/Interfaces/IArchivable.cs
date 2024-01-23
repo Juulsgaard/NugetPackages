@@ -1,4 +1,4 @@
-﻿namespace Crud.Domain.Interfaces;
+﻿namespace Juulsgaard.Crud.Domain.Interfaces;
 
 public interface IArchivable
 {

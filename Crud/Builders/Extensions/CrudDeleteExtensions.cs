@@ -1,7 +1,7 @@
 ﻿using System.Linq.Expressions;
-using Crud.Domain.Interfaces;
+using Juulsgaard.Crud.Domain.Interfaces;
 
-namespace Crud.Builders.Extensions;
+namespace Juulsgaard.Crud.Builders.Extensions;
 
 public static class CrudDeleteExtensions
 {

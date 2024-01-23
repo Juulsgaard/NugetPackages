@@ -1,6 +1,6 @@
 ﻿using System.Net;
 
-namespace Crud.Exceptions;
+namespace Juulsgaard.Crud.Exceptions;
 
 public class DatabaseLoadException : DatabaseException
 {

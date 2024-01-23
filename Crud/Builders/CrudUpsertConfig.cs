@@ -1,7 +1,7 @@
 using System.Linq.Expressions;
-using Tools.Exceptions;
+using Juulsgaard.Tools.Exceptions;
 
-namespace Crud.Builders;
+namespace Juulsgaard.Crud.Builders;
 
 /// <summary>
 /// This is the config for Updating or Creating (upserting) an Entity

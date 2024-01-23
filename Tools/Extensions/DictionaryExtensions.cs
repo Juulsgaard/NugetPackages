@@ -1,6 +1,6 @@
 ﻿using System.Collections;
 
-namespace Tools.Extensions;
+namespace Juulsgaard.Tools.Extensions;
 
 public static class DictionaryExtensions
 {

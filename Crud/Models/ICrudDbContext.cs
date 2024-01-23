@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 
-namespace Crud.Models;
+namespace Juulsgaard.Crud.Models;
 
 public interface ICrudDbContext
 {

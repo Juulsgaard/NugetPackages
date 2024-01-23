@@ -1,10 +1,10 @@
 ﻿using System.Collections;
-using SpreadsheetReader.Interfaces;
-using SpreadsheetReader.Models;
-using Tools.Exceptions;
-using Tools.Extensions;
+using Juulsgaard.SpreadsheetReader.Interfaces;
+using Juulsgaard.SpreadsheetReader.Models;
+using Juulsgaard.Tools.Exceptions;
+using Juulsgaard.Tools.Extensions;
 
-namespace SpreadsheetReader;
+namespace Juulsgaard.SpreadsheetReader;
 
 internal abstract class BaseWorkbookReader : IWorkbookReader
 {

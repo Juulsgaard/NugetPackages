@@ -1,8 +1,8 @@
 ﻿using System.Linq.Expressions;
-using Crud.Domain.Interfaces;
-using Crud.Monitoring;
+using Juulsgaard.Crud.Domain.Interfaces;
+using Juulsgaard.Crud.Monitoring;
 
-namespace Crud.Builders.Extensions;
+namespace Juulsgaard.Crud.Builders.Extensions;
 
 public static class CrudUpdateExtensions
 {

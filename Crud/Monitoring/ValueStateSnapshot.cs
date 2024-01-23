@@ -1,4 +1,4 @@
-﻿namespace Crud.Monitoring;
+﻿namespace Juulsgaard.Crud.Monitoring;
 
 public class ValueStateSnapshot<TModel> : IStateSnapshot<TModel>
 {

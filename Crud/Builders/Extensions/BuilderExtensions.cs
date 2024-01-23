@@ -1,8 +1,8 @@
 ﻿using System.Linq.Expressions;
-using Crud.Domain.Interfaces;
+using Juulsgaard.Crud.Domain.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
-namespace Crud.Builders.Extensions;
+namespace Juulsgaard.Crud.Builders.Extensions;
 
 public static class BuilderExtensions
 {

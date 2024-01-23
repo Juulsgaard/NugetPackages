@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage;
 
-namespace Crud.Transactions;
+namespace Juulsgaard.Crud.Transactions;
 
 public class InnerTransaction : IDbContextTransaction
 {

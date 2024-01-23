@@ -1,17 +1,17 @@
 using System.Linq.Expressions;
 using AutoMapper;
-using Crud.Domain.Interfaces;
-using Crud.Exceptions;
-using Crud.Models;
-using Crud.Monitoring;
 using EntityFramework.Exceptions.Common;
+using Juulsgaard.Crud.Domain.Interfaces;
+using Juulsgaard.Crud.Exceptions;
+using Juulsgaard.Crud.Models;
+using Juulsgaard.Crud.Monitoring;
+using Juulsgaard.Tools.Exceptions;
+using Juulsgaard.Tools.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
 using Serilog;
-using Tools.Exceptions;
-using Tools.Extensions;
 
-namespace Crud.Builders;
+namespace Juulsgaard.Crud.Builders;
 
 /// <summary>
 /// This is the config for updating an Entity

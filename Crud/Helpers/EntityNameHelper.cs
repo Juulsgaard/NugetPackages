@@ -1,7 +1,7 @@
 ﻿using System.Text.RegularExpressions;
-using Tools.Extensions;
+using Juulsgaard.Tools.Extensions;
 
-namespace Crud.Helpers;
+namespace Juulsgaard.Crud.Helpers;
 
 public static class EntityNameHelper
 {

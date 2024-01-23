@@ -1,6 +1,6 @@
 ﻿using System.Net;
 
-namespace Tools.Exceptions;
+namespace Juulsgaard.Tools.Exceptions;
 
 public abstract class CustomException : Exception
 {

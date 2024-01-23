@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore.Metadata;
 
-namespace Crud.Monitoring;
+namespace Juulsgaard.Crud.Monitoring;
 
 public class ListStateSnapshot<TModel> : IStateSnapshot<List<TModel>>
 {

@@ -1,4 +1,4 @@
-﻿namespace SpreadsheetReader.Interfaces;
+﻿namespace Juulsgaard.SpreadsheetReader.Interfaces;
 
 public interface IImportSheetConfig
 {

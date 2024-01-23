@@ -1,7 +1,7 @@
 ﻿using System.Net;
-using Tools.Exceptions;
+using Juulsgaard.Tools.Exceptions;
 
-namespace Crud.Exceptions;
+namespace Juulsgaard.Crud.Exceptions;
 
 public class DatabaseException : CustomException
 {

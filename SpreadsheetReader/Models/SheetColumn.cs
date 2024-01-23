@@ -1,6 +1,6 @@
-﻿using Tools.Extensions;
+﻿using Juulsgaard.Tools.Extensions;
 
-namespace SpreadsheetReader.Models;
+namespace Juulsgaard.SpreadsheetReader.Models;
 
 public class SheetColumn : ISheetColumn
 {

@@ -1,7 +1,7 @@
 ﻿using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 
-namespace Crud.Monitoring;
+namespace Juulsgaard.Crud.Monitoring;
 
 /// <inheritdoc/>
 public class PropertyUpdateMonitor<TModel, TProp> : IPropertyUpdateMonitor<TModel> where TModel : class

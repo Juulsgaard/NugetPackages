@@ -1,4 +1,4 @@
-﻿namespace Crud.Monitoring;
+﻿namespace Juulsgaard.Crud.Monitoring;
 
 /// <summary>
 /// A structure to report changes to a property during a given Update operation

@@ -1,7 +1,7 @@
 ﻿using System.Reflection;
 using Microsoft.EntityFrameworkCore.Metadata;
 
-namespace Crud.Monitoring;
+namespace Juulsgaard.Crud.Monitoring;
 
 /**
  * A snapshot of an entity that only stores non-nav properties
@@ -19,7 +19,7 @@ public class EntityStateSnapshot<TModel> : IStateSnapshot<TModel>
 	public EntityStateSnapshot(TModel model, IEntityType entityType)
 	{
 		_entityType = entityType;
-		_value = (TModel)SHALLOW_CLONE.Invoke(model, Array.Empty<object>())!;
+		_value = (TModel)EntityStateSnapshot<TModel>.SHALLOW_CLONE.Invoke(model, Array.Empty<object>())!;
 	}
 
 	public TModel GetValue() => _value;

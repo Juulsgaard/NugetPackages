@@ -1,7 +1,7 @@
 using System.Linq.Expressions;
-using Tools.Exceptions;
+using Juulsgaard.Tools.Exceptions;
 
-namespace Crud.Helpers;
+namespace Juulsgaard.Crud.Helpers;
 
 public static class CrudErrorHelper {
 		

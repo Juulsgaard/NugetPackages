@@ -1,9 +1,9 @@
 ﻿using System.Globalization;
+using Juulsgaard.SpreadsheetReader.Enums;
+using Juulsgaard.Tools.Extensions;
 using Serilog;
-using SpreadsheetReader.Enums;
-using Tools.Extensions;
 
-namespace SpreadsheetReader.Models;
+namespace Juulsgaard.SpreadsheetReader.Models;
 
 public record SheetValue(ISheetColumn Column, string Value, int RowNum)
 {

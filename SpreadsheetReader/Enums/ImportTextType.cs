@@ -1,4 +1,4 @@
-﻿namespace SpreadsheetReader.Enums;
+﻿namespace Juulsgaard.SpreadsheetReader.Enums;
 
 public enum ImportTextType
 {

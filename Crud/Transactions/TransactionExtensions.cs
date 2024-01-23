@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 
-namespace Crud.Transactions;
+namespace Juulsgaard.Crud.Transactions;
 
 public static class TransactionExtensions
 {

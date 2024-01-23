@@ -1,6 +1,6 @@
-﻿using SpreadsheetReader.Models;
+﻿using Juulsgaard.SpreadsheetReader.Models;
 
-namespace SpreadsheetReader.Interfaces;
+namespace Juulsgaard.SpreadsheetReader.Interfaces;
 
 internal interface ISheetReader : IDisposable
 {

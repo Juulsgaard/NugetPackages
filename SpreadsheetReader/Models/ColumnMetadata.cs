@@ -1,4 +1,4 @@
-﻿namespace SpreadsheetReader.Models;
+﻿namespace Juulsgaard.SpreadsheetReader.Models;
 
 public class ColumnMetadata
 {

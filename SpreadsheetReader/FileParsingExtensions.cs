@@ -1,8 +1,8 @@
-﻿using SpreadsheetReader.Interfaces;
-using SpreadsheetReader.Models;
-using Tools.Helpers;
+﻿using Juulsgaard.SpreadsheetReader.Interfaces;
+using Juulsgaard.SpreadsheetReader.Models;
+using Juulsgaard.Tools.Helpers;
 
-namespace SpreadsheetReader;
+namespace Juulsgaard.SpreadsheetReader;
 
 public static class FileParsingExtensions
 {

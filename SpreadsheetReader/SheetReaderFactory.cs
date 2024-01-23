@@ -1,10 +1,10 @@
-﻿using Serilog;
-using SpreadsheetReader.Interfaces;
-using SpreadsheetReader.Readers;
-using Tools.Exceptions;
-using Tools.FileTypes;
+﻿using Juulsgaard.SpreadsheetReader.Interfaces;
+using Juulsgaard.SpreadsheetReader.Readers;
+using Juulsgaard.Tools.Exceptions;
+using Juulsgaard.Tools.FileTypes;
+using Serilog;
 
-namespace SpreadsheetReader;
+namespace Juulsgaard.SpreadsheetReader;
 
 public class SheetReaderFactory
 {

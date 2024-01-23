@@ -2,10 +2,10 @@
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
-using SpreadsheetReader.Interfaces;
-using SpreadsheetReader.Models;
+using Juulsgaard.SpreadsheetReader.Interfaces;
+using Juulsgaard.SpreadsheetReader.Models;
 
-namespace SpreadsheetReader.Readers;
+namespace Juulsgaard.SpreadsheetReader.Readers;
 
 internal class ExcelReader : ISheetReader
 {

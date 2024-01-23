@@ -4,13 +4,16 @@
         <TargetFramework>net8.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <AssemblyName>Juulsgaard.SpreadsheetReader</AssemblyName>
+        <RootNamespace>Juulsgaard.SpreadsheetReader</RootNamespace>
+        <PackageId>Juulsgaard.SpreadsheetReader</PackageId>
         <Title>Spreadsheet Reader</Title>
         <Authors>Frederik Sørensen</Authors>
         <RepositoryUrl>https://github.com/Juulsgaard/NugetPackages</RepositoryUrl>
-        <PackageId>Juulsgaard.SpreadsheetReader</PackageId>
         <RepositoryType>GIT</RepositoryType>
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <Version>1.0.1</Version>
     </PropertyGroup>
 
     <ItemGroup>
