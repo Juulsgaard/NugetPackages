@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using Juulsgaard.SpreadsheetReader.Exceptions;
 using Juulsgaard.Tools.Exceptions;
 
 namespace Juulsgaard.SpreadsheetReader.Models;
@@ -19,6 +20,10 @@ public class SheetRow : IEnumerable<SheetValue?>
 	
 	public int RowNumber { get; }
 	public bool Empty { get; }
+
+	public SheetRowInfo Info => new() {
+		RowNumber = RowNumber
+	};
 	
 	public SheetRow(IEnumerable<SheetValue?> values, int rowNumber)
 	{
@@ -43,6 +48,6 @@ public class SheetRow : IEnumerable<SheetValue?>
 	public SheetValue? GetOrDefault(int index) => PositionLookup.TryGetValue(index, out var val) ? val : null;
 	public SheetValue? GetOrDefault(ISheetColumn? index) => index != null && ColumnLookup.TryGetValue(index, out var val) ? val : null;
 	
-	public SheetValue Get(int index) => GetOrDefault(index) ?? throw new UserException($"Column Index: {index} was not found in Row {RowNumber}");
-	public SheetValue Get(ISheetColumn index) => GetOrDefault(index) ?? throw new UserException($"Column: {index.Name} was not found in Row {RowNumber}");
+	public SheetValue Get(int index) => GetOrDefault(index) ?? throw new SpreadsheetReaderRowException(Info, $"Column Index: {index} was not found in Row");
+	public SheetValue Get(ISheetColumn index) => GetOrDefault(index) ?? throw new SpreadsheetReaderRowException(Info, $"Column: {index.Name} was not found in Row");
 }

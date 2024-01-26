@@ -18,6 +18,13 @@ public class SheetColumn : ISheetColumn
 	public string Slug { get; private init; } = null!;
 	public required int Position { get; init; }
 	public bool Hidden { get; init; } = false;
+
+	public SheetColumnInfo Info => new() {
+		Name = Name,
+		Slug = Slug,
+		Position = Position,
+		Hidden = Hidden,
+	};
 	
 	public SheetValue Read()
 	{

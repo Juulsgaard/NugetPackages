@@ -1,6 +1,6 @@
-﻿using Juulsgaard.SpreadsheetReader.Interfaces;
+﻿using Juulsgaard.SpreadsheetReader.Exceptions;
+using Juulsgaard.SpreadsheetReader.Interfaces;
 using Juulsgaard.SpreadsheetReader.Readers;
-using Juulsgaard.Tools.Exceptions;
 using Juulsgaard.Tools.FileTypes;
 using Serilog;
 
@@ -18,7 +18,7 @@ public class SheetReaderFactory
 
 		if (type == null) {
 			Log.Error("Import file: {FileName}, {FileType} is not supported", fileName, mimeType);
-			throw new UserException("Unsupported filetype");
+			throw new SpreadsheetReaderException("Unsupported filetype");
 		}
 
 		_type = type.Value;
@@ -31,7 +31,7 @@ public class SheetReaderFactory
 			ImportFileTypes.Csv   => new CsvWorkbookReader(fileStream, Delimiter),
 			ImportFileTypes.Tsv   => new CsvWorkbookReader(fileStream, Delimiter),
 			ImportFileTypes.Txt   => new CsvWorkbookReader(fileStream, Delimiter),
-			_                     => throw new InternalException("Failed to determine the Import File Type")
+			_                     => throw new ArgumentException("Failed to determine the Import File Type")
 		};
 	}
 

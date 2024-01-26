@@ -1,4 +1,5 @@
-﻿using Juulsgaard.SpreadsheetReader.Interfaces;
+﻿using Juulsgaard.SpreadsheetReader.Exceptions;
+using Juulsgaard.SpreadsheetReader.Interfaces;
 using Juulsgaard.SpreadsheetReader.Models;
 using Juulsgaard.Tools.Exceptions;
 
@@ -20,7 +21,7 @@ internal class CsvWorkbookReader : BaseWorkbookReader
 	protected override ISheetReader? GenerateSheetReader(SheetInfo? sheet = null)
 	{
 		if (sheet is not null && sheet.Id is not "default") {
-			throw new UserException("CSV files can't be used for multi sheet uploads");
+			throw new SpreadsheetReaderException("CSV files can't be used for multi sheet uploads");
 		}
 		
 		return new CsvReader(_stream, Sheets[0], _delimiter);

@@ -1,5 +1,6 @@
 ﻿using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
+using Juulsgaard.SpreadsheetReader.Exceptions;
 using Juulsgaard.SpreadsheetReader.Interfaces;
 using Juulsgaard.SpreadsheetReader.Models;
 using Juulsgaard.Tools.Exceptions;
@@ -20,12 +21,12 @@ internal class ExcelWorkbookReader : BaseWorkbookReader
 		var workBookPart = _document.WorkbookPart;
 
 		if (workBookPart == null) {
-			throw new UserException("Invalid Excel File: Work Book not found");
+			throw new SpreadsheetReaderException("Invalid Excel File: Work Book not found");
 		}
 
 		var sstPart = workBookPart.GetPartsOfType<SharedStringTablePart>().FirstOrDefault();
 		if (sstPart == null) {
-			throw new UserException(
+			throw new SpreadsheetReaderException(
 				"The Excel file does not contain a Shared String Table. Please try opening and saving the file, before retrying."
 			);
 		}

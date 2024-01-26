@@ -1,4 +1,5 @@
-﻿using Juulsgaard.SpreadsheetReader.Interfaces;
+﻿using Juulsgaard.SpreadsheetReader.Exceptions;
+using Juulsgaard.SpreadsheetReader.Interfaces;
 using Juulsgaard.SpreadsheetReader.Models;
 using Juulsgaard.Tools.Exceptions;
 using Juulsgaard.Tools.Extensions;
@@ -24,7 +25,7 @@ public class SheetReader : IDisposable
 			return new SheetReader(row, meta, reader);
 		}
 
-		throw new UserException("No headers found in Sheet");
+		throw new SpreadsheetReaderException("No headers found in Sheet");
 	}
 
 	internal static SheetReader Create(ISheetReader reader)
@@ -37,7 +38,7 @@ public class SheetReader : IDisposable
 			return new SheetReader(row, meta, reader);
 		}
 
-		throw new UserException("No headers found in Sheet");
+		throw new SpreadsheetReaderException("No headers found in Sheet");
 	}
 
 	#endregion
@@ -121,7 +122,7 @@ public class SheetReader : IDisposable
 	{
 		var column = GetColumnOrDefault(slug);
 		if (column == null) {
-			throw new UserException($"'{columnName}' column is missing in Sheet '{Info.Name}'");
+			throw new SpreadsheetReaderException($"'{columnName}' column is missing in Sheet '{Info.Name}'");
 		}
 
 		return column;

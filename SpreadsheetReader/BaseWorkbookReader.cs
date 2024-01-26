@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using Juulsgaard.SpreadsheetReader.Exceptions;
 using Juulsgaard.SpreadsheetReader.Interfaces;
 using Juulsgaard.SpreadsheetReader.Models;
 using Juulsgaard.Tools.Exceptions;
@@ -15,7 +16,7 @@ internal abstract class BaseWorkbookReader : IWorkbookReader
 	private ISheetReader GetReader(SheetInfo sheet)
 	{
 		var reader = GenerateSheetReader(sheet);
-		if (reader is null) throw new InternalException($"Failed to load Sheet '{sheet.Name}'");
+		if (reader is null) throw new SpreadsheetReaderException($"Failed to load Sheet '{sheet.Name}'");
 
 		return reader;
 	}
@@ -24,12 +25,12 @@ internal abstract class BaseWorkbookReader : IWorkbookReader
 	{
 		if (id is null) {
 			var defaultReader = GenerateSheetReader();
-			if (defaultReader is null) throw new NotFoundException("No sheets found");
+			if (defaultReader is null) throw new SpreadsheetReaderException("No sheets found");
 			return defaultReader;
 		}
 		
 		var sheet = Sheets.FirstOrDefault(x => x.Id == id);
-		if (sheet is null) throw new NotFoundException($"No sheet found with id: '{id}'");
+		if (sheet is null) throw new SpreadsheetReaderException($"No sheet found with id: '{id}'");
 
 		return GetReader(sheet);
 	}
@@ -38,7 +39,7 @@ internal abstract class BaseWorkbookReader : IWorkbookReader
 	{
 		var slug = name.Slugify();
 		var sheet = Sheets.FirstOrDefault(x => x.Slug == slug);
-		if (sheet is null) throw new NotFoundException($"No sheet found with name: '{name}'");
+		if (sheet is null) throw new SpreadsheetReaderException($"No sheet found with name: '{name}'");
 		
 		return GetReader(sheet);
 	}
