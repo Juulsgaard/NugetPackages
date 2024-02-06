@@ -2,7 +2,12 @@ namespace Juulsgaard.Tools.FileTypes;
 
 public class FileTypeList<TEnum> : List<FileType<TEnum>> where TEnum : struct, Enum
 {
-	public TEnum? FindMatch(string filename, string mimetype)
+	public TEnum? FindMatch(string filename)
+	{
+		return FindMatch(filename, null);
+	}
+	
+	public TEnum? FindMatch(string? filename, string? mimetype)
 	{
 		var fileType = this.FirstOrDefault(x => x.IsMatch(filename, mimetype));
 		return fileType?.Value;

@@ -1,10 +1,10 @@
 ﻿using Juulsgaard.SpreadsheetReader.Exceptions;
 using Juulsgaard.SpreadsheetReader.Interfaces;
 using Juulsgaard.SpreadsheetReader.Models;
-using Juulsgaard.Tools.Exceptions;
 using Juulsgaard.Tools.Extensions;
+using Microsoft.Extensions.Logging;
 
-namespace Juulsgaard.SpreadsheetReader;
+namespace Juulsgaard.SpreadsheetReader.Readers;
 
 public class SheetReader : IDisposable
 {
@@ -12,38 +12,39 @@ public class SheetReader : IDisposable
 	public SheetInfo Info => _reader.Info;
 	
 	private readonly ISheetReader _reader;
+	private readonly ILogger? _logger;
 
 	#region Factories
 
-	internal static async Task<SheetReader> CreateAsync(ISheetReader reader)
+	internal static async Task<SheetReader> CreateAsync(ISheetReader reader, ILogger? logger)
 	{
 		for (var i = 0; i < 3; i++) {
 			var row = await reader.ReadRowAsync();
 			if (row == null) break;
 			if (row.Count < 1) continue;
 			var meta = reader.ReadColumnMeta()?.ToDictionary(x => x.Position);
-			return new SheetReader(row, meta, reader);
+			return new SheetReader(row, meta, reader, logger);
 		}
 
-		throw new SpreadsheetReaderException("No headers found in Sheet");
+		throw new SheetReaderException("No headers found in Sheet");
 	}
 
-	internal static SheetReader Create(ISheetReader reader)
+	internal static SheetReader Create(ISheetReader reader, ILogger? logger)
 	{
 		for (var i = 0; i < 3; i++) {
 			var row = reader.ReadRow();
 			if (row == null) break;
 			if (row.Count < 1) continue;
 			var meta = reader.ReadColumnMeta()?.ToDictionary(x => x.Position);
-			return new SheetReader(row, meta, reader);
+			return new SheetReader(row, meta, reader, logger);
 		}
 
-		throw new SpreadsheetReaderException("No headers found in Sheet");
+		throw new SheetReaderException("No headers found in Sheet");
 	}
 
 	#endregion
 
-	private SheetReader(IEnumerable<string?> columns, IReadOnlyDictionary<int, ColumnMetadata>? metadata, ISheetReader reader)
+	private SheetReader(IEnumerable<string?> columns, IReadOnlyDictionary<int, ColumnMetadata>? metadata, ISheetReader reader, ILogger? logger)
 	{
 		Columns = columns
 		   .Select((value, index) => new { Value = value, Index = index })
@@ -58,12 +59,14 @@ public class SheetReader : IDisposable
 		   .ToList();
 
 		_reader = reader;
+		_logger = logger;
 	}
 
-	internal SheetReader(IReadOnlyList<SheetColumn> columns, ISheetReader reader)
+	internal SheetReader(IReadOnlyList<SheetColumn> columns, ISheetReader reader, ILogger? logger)
 	{
 		Columns = columns;
 		_reader = reader;
+		_logger = logger;
 	}
 
 
@@ -80,6 +83,13 @@ public class SheetReader : IDisposable
 		return true;
 	}
 
+	public IEnumerable<SheetRow> Rows()
+	{
+		while (ReadRow()) {
+			yield return Row;
+		}
+	}
+
 	public async Task<bool> ReadRowAsync()
 	{
 		var row = await _reader.ReadRowAsync();
@@ -89,6 +99,13 @@ public class SheetReader : IDisposable
 
 		Row = ParseRow(row);
 		return true;
+	}
+	
+	public async IAsyncEnumerable<SheetRow> RowsAsync()
+	{
+		while (await ReadRowAsync()) {
+			yield return Row;
+		}
 	}
 
 	private SheetRow ParseRow(List<string> row)
@@ -105,7 +122,7 @@ public class SheetReader : IDisposable
 			if (i < enumerator.Current.Position) continue;
 
 			var val = row[i];
-			values.Add(val.IsEmpty() ? null : new SheetValue(enumerator.Current, val, _reader.Row));
+			values.Add(val.IsEmpty() ? null : new SheetValue(enumerator.Current, new SheetRowInfo {RowNumber = _reader.Row}, val, _logger));
 
 			if (!enumerator.MoveNext()) break;
 		}
@@ -122,7 +139,7 @@ public class SheetReader : IDisposable
 	{
 		var column = GetColumnOrDefault(slug);
 		if (column == null) {
-			throw new SpreadsheetReaderException($"'{columnName}' column is missing in Sheet '{Info.Name}'");
+			throw new SheetReaderException($"'{columnName}' column is missing in Sheet '{Info.Name}'");
 		}
 
 		return column;

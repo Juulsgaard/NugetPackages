@@ -1,6 +1,6 @@
 ﻿namespace Juulsgaard.SpreadsheetReader.Enums;
 
-public enum ImportTextType
+public enum SheetTextType
 {
 	Plain,
 	Markdown,

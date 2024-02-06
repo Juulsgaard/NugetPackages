@@ -48,6 +48,6 @@ public class SheetRow : IEnumerable<SheetValue?>
 	public SheetValue? GetOrDefault(int index) => PositionLookup.TryGetValue(index, out var val) ? val : null;
 	public SheetValue? GetOrDefault(ISheetColumn? index) => index != null && ColumnLookup.TryGetValue(index, out var val) ? val : null;
 	
-	public SheetValue Get(int index) => GetOrDefault(index) ?? throw new SpreadsheetReaderRowException(Info, $"Column Index: {index} was not found in Row");
-	public SheetValue Get(ISheetColumn index) => GetOrDefault(index) ?? throw new SpreadsheetReaderRowException(Info, $"Column: {index.Name} was not found in Row");
+	public SheetValue Get(int index) => GetOrDefault(index) ?? throw new SheetReaderRowException(Info, $"Column Index: {index} was not found in row");
+	public SheetValue Get(ISheetColumn index) => GetOrDefault(index) ?? throw new SheetReaderRowException(Info, $"Column: {index.Name} was not found in row");
 }

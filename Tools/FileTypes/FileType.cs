@@ -7,15 +7,14 @@ public class FileType<TEnum> where TEnum : struct, Enum
 	public List<string>? Extensions { get; init; }
 	public Func<string, bool>? CustomValidation { get; init; }
 
-	public bool IsMatch(string fileName, string mimeType)
+	public bool IsMatch(string? fileName, string? mimeType)
 	{
-		if (MimeTypes?.Contains(mimeType) ?? false) {
-			return true;
+		if (mimeType is not null) {
+			if (MimeTypes?.Contains(mimeType) ?? false) return true;
+			if (CustomValidation?.Invoke(mimeType) ?? false) return true;
 		}
-		
-		if (CustomValidation?.Invoke(mimeType) ?? false) {
-			return true;
-		}
+
+		if (fileName is null) return false;
 
 		var extension = Path.GetExtension(fileName).TrimStart('.').ToLower();
 		

@@ -6,11 +6,6 @@ namespace Juulsgaard.SpreadsheetReader;
 
 public static class FileParsingExtensions
 {
-	public static Task<SheetReader> ReadSheetAsync(this IWorkbookReader reader, IImportSheetConfig sheetConfig)
-	{
-		return reader.ReadSheetFromNameAsync(sheetConfig.Slug);
-	}
-
 	/// <summary>
 	/// Read potentially non-existent value
 	/// The result is a tri-state

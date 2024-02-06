@@ -2,29 +2,23 @@
 using Juulsgaard.SpreadsheetReader.Interfaces;
 using Juulsgaard.SpreadsheetReader.Models;
 using Juulsgaard.Tools.Exceptions;
+using Microsoft.Extensions.Logging;
 
 namespace Juulsgaard.SpreadsheetReader.Readers;
 
-internal class CsvWorkbookReader : BaseWorkbookReader
+internal class CsvWorkbookReader(Stream stream, string? delimiter, ILogger? logger) : BaseWorkbookReader(logger)
 {
-	private readonly Stream _stream;
-	private readonly string? _delimiter;
-	public override IReadOnlyList<SheetInfo> Sheets { get; }
-
-	public CsvWorkbookReader(Stream stream, string? delimiter)
-	{
-		_stream = stream;
-		_delimiter = delimiter;
-		Sheets = new List<SheetInfo> { new() {Id = "default", Index = 0, Name = "Default"} };
-	}
+	public override IReadOnlyList<SheetInfo> Sheets { get; } = [ 
+		new() {Id = "default", Index = 0, Name = "Default"} 
+	];
 
 	protected override ISheetReader? GenerateSheetReader(SheetInfo? sheet = null)
 	{
 		if (sheet is not null && sheet.Id is not "default") {
-			throw new SpreadsheetReaderException("CSV files can't be used for multi sheet uploads");
+			throw new SheetReaderException("CSV files can't be used for multi sheet uploads");
 		}
 		
-		return new CsvReader(_stream, Sheets[0], _delimiter);
+		return new CsvReader(stream, Sheets[0], delimiter);
 	}
 
 	public override void Dispose()

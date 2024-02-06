@@ -3,7 +3,7 @@ using DocumentFormat.OpenXml.Spreadsheet;
 using Juulsgaard.SpreadsheetReader.Exceptions;
 using Juulsgaard.SpreadsheetReader.Interfaces;
 using Juulsgaard.SpreadsheetReader.Models;
-using Juulsgaard.Tools.Exceptions;
+using Microsoft.Extensions.Logging;
 
 namespace Juulsgaard.SpreadsheetReader.Readers;
 
@@ -15,18 +15,18 @@ internal class ExcelWorkbookReader : BaseWorkbookReader
 	
 	public override IReadOnlyList<SheetInfo> Sheets { get; }
 
-	public ExcelWorkbookReader(Stream fileStream)
+	public ExcelWorkbookReader(Stream fileStream, ILogger? logger) : base(logger)
 	{
 		_document = SpreadsheetDocument.Open(fileStream, false);
 		var workBookPart = _document.WorkbookPart;
 
 		if (workBookPart == null) {
-			throw new SpreadsheetReaderException("Invalid Excel File: Work Book not found");
+			throw new SheetReaderException("Invalid Excel File: Work Book not found");
 		}
 
 		var sstPart = workBookPart.GetPartsOfType<SharedStringTablePart>().FirstOrDefault();
 		if (sstPart == null) {
-			throw new SpreadsheetReaderException(
+			throw new SheetReaderException(
 				"The Excel file does not contain a Shared String Table. Please try opening and saving the file, before retrying."
 			);
 		}
@@ -42,7 +42,7 @@ internal class ExcelWorkbookReader : BaseWorkbookReader
 				Name = x.Name!.Value!,
 				Hidden = x.State?.Value == SheetStateValues.Hidden || x.State?.Value == SheetStateValues.VeryHidden
 			})
-		   .ToList() ?? new List<SheetInfo>();
+		   .ToList() ?? [];
 
 		_sheetPartLookup = workBookPart.WorksheetParts
 		   .Select(sheetPart => new { SheetPart = sheetPart, Id = workBookPart.GetIdOfPart(sheetPart) })
