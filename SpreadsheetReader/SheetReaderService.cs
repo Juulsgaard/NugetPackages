@@ -9,8 +9,6 @@ namespace Juulsgaard.SpreadsheetReader;
 
 public class SheetReaderService(ILogger logger)
 {
-	private readonly ILogger _logger = logger;
-
 	public IWorkbookReader CreateExcelReader(Stream stream, SheetReaderOptions? options = null)
 	{
 		return new ExcelWorkbookReader(stream, logger);
