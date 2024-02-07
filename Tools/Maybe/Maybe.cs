@@ -1,8 +1,6 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿namespace Juulsgaard.Tools.Maybe;
 
-namespace Juulsgaard.Tools.Maybe;
-
-public readonly struct Maybe<T> : IMaybe<T>, IEquatable<IMaybe<T>>, IEquatable<T>, IEquatable<IMaybe>, IEquatable<object>
+public readonly struct Maybe<T> : IMaybe<T>, IEquatable<IMaybe<T>>, IEquatable<IMaybe>, IEquatable<object>
 {
 	public static Maybe<T> Empty() => new();
 	public static Maybe<T> From(T value) => new(value);
@@ -29,12 +27,6 @@ public readonly struct Maybe<T> : IMaybe<T>, IEquatable<IMaybe<T>>, IEquatable<T
 
 	#region Conversion
 
-	public static implicit operator Maybe<T>(T value)
-	{
-		if (value is Maybe<T> m) return m;
-		return Maybe.From(value);
-	}
-
 	public static implicit operator Maybe<T>(Maybe value) => Maybe<T>.Empty();
 
 	#endregion
@@ -56,15 +48,6 @@ public readonly struct Maybe<T> : IMaybe<T>, IEquatable<IMaybe<T>>, IEquatable<T
 		return Value.Equals(other.Value);
 	}
 
-	public bool Equals(T? value)
-	{
-		if (value is null) return false;
-		if (IsEmpty) return false;
-		if (Value is null) return false;
-
-		return Value.Equals(value);
-	}
-
 	public bool Equals(IMaybe? other)
 	{
 		if (other is IMaybe<T> maybe) return Equals(maybe);
@@ -77,8 +60,8 @@ public readonly struct Maybe<T> : IMaybe<T>, IEquatable<IMaybe<T>>, IEquatable<T
 		if (other is null) return false;
 
 		return other switch {
+			IMaybe<T> maybe => Equals(maybe),
 			IMaybe empty    => Equals(empty),
-			T val           => Equals(val),
 			_               => false
 		};
 	}
@@ -96,12 +79,12 @@ public readonly struct Maybe<T> : IMaybe<T>, IEquatable<IMaybe<T>>, IEquatable<T
 
 	public static bool operator ==(Maybe<T> left, Maybe<T> right) => left.Equals(right);
 	public static bool operator !=(Maybe<T> left, Maybe<T> right) => !(left == right);
-	
+
 	public static bool operator ==(Maybe<T> left, IMaybe right) => left.Equals(right);
 	public static bool operator !=(Maybe<T> left, IMaybe right) => !(left == right);
 
 	#endregion
-	
+
 	public override string ToString()
 	{
 		if (IsEmpty) return "Empty";
