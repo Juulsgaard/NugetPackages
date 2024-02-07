@@ -1,6 +1,6 @@
 ﻿using Juulsgaard.SpreadsheetReader.Interfaces;
 using Juulsgaard.SpreadsheetReader.Models;
-using Juulsgaard.Tools.Helpers;
+using Juulsgaard.Tools.Maybe;
 
 namespace Juulsgaard.SpreadsheetReader;
 
@@ -18,10 +18,10 @@ public static class FileParsingExtensions
 	/// <returns>The value tri-state</returns>
 	public static Maybe<T?> MaybeRead<T>(this SheetColumn? column, Func<SheetValue, T?> modify)
 	{
-		if (column is null) return Maybe.Empty<T?>();
+		if (column is null) return Maybe.Empty();
 		var val = column.ReadOrDefault();
-		if (val is null) return Maybe.FromValue<T?>(default);
-		return Maybe.FromValue(modify(val));
+		if (val is null) return Maybe.From<T?>(default);
+		return Maybe.From(modify(val));
 	}
 	
 	/// <summary>
@@ -35,9 +35,9 @@ public static class FileParsingExtensions
 	/// <returns>The value tri-state</returns>
 	public static Maybe<SheetValue?> MaybeRead(this SheetColumn? column)
 	{
-		if (column is null) return Maybe.Empty<SheetValue?>();
+		if (column is null) return Maybe.Empty();
 		var val = column.ReadOrDefault();
-		if (val is null) return Maybe.FromValue<SheetValue?>(default);
-		return Maybe.FromValue<SheetValue?>(val);
+		if (val is null) return Maybe.From<SheetValue?>(null);
+		return Maybe.From<SheetValue?>(val);
 	}
 }
