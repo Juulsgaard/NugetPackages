@@ -1,4 +1,6 @@
-﻿namespace Juulsgaard.Tools.Maybe;
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace Juulsgaard.Tools.Maybe;
 
 public readonly struct Maybe<T> : IMaybe<T>, IEquatable<IMaybe<T>>, IEquatable<T>, IEquatable<IMaybe>, IEquatable<object>
 {
@@ -90,17 +92,21 @@ public readonly struct Maybe<T> : IMaybe<T>, IEquatable<IMaybe<T>>, IEquatable<T
 
 	#endregion
 
-	public override string ToString()
-	{
-		if (IsEmpty) return "Empty";
-		return _value?.ToString() ?? "null";
-	}
-	
+	#region Operators
+
 	public static bool operator ==(Maybe<T> left, Maybe<T> right) => left.Equals(right);
 	public static bool operator !=(Maybe<T> left, Maybe<T> right) => !(left == right);
 	
 	public static bool operator ==(Maybe<T> left, IMaybe right) => left.Equals(right);
 	public static bool operator !=(Maybe<T> left, IMaybe right) => !(left == right);
+
+	#endregion
+	
+	public override string ToString()
+	{
+		if (IsEmpty) return "Empty";
+		return _value?.ToString() ?? "null";
+	}
 }
 
 public class Maybe : IMaybe
