@@ -15,7 +15,7 @@ internal class ExcelWorkbookReader : BaseWorkbookReader
 	
 	public override IReadOnlyList<SheetInfo> Sheets { get; }
 
-	public ExcelWorkbookReader(Stream fileStream, ILogger? logger) : base(logger)
+	public ExcelWorkbookReader(Stream fileStream, ILogger? logger, IFormatProvider? locale) : base(logger, locale)
 	{
 		_document = SpreadsheetDocument.Open(fileStream, false);
 		var workBookPart = _document.WorkbookPart;

@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Juulsgaard.SpreadsheetReader.Models;
 
-public class SheetValue(ISheetColumn column, ISheetRow row, string value, ILogger? logger)
+public class SheetValue(ISheetColumn column, ISheetRow row, string value, ILogger? logger, IFormatProvider? locale)
 {
 	private static readonly HashSet<string> TRUE_STR = ["1", "true", "yes", "y"];
 	
@@ -95,7 +95,7 @@ public class SheetValue(ISheetColumn column, ISheetRow row, string value, ILogge
 	/// </summary>
 	public float? AsFloatOrNull()
 	{
-		var success = float.TryParse(Value, NumberStyles.Any, CultureInfo.InvariantCulture, out var f);
+		var success = float.TryParse(Value, NumberStyles.Any, locale, out var f);
 		if (success) return f;
 		return null;
 	}
@@ -145,7 +145,7 @@ public class SheetValue(ISheetColumn column, ISheetRow row, string value, ILogge
 			return null;
 		}
 
-		var success = DateTime.TryParse(Value, out var f);
+		var success = DateTime.TryParse(Value, locale, out var f);
 		if (success) return f;
 
 		return null;
@@ -195,7 +195,7 @@ public class SheetValue(ISheetColumn column, ISheetRow row, string value, ILogge
 			return null;
 		}
 
-		var success = DateOnly.TryParse(Value, out var f);
+		var success = DateOnly.TryParse(Value, locale, out var f);
 		if (success) return f;
 
 		return null;
@@ -246,7 +246,7 @@ public class SheetValue(ISheetColumn column, ISheetRow row, string value, ILogge
 			return null;
 		}
 
-		var success = TimeOnly.TryParse(Value, out var f);
+		var success = TimeOnly.TryParse(Value, locale, out var f);
 		if (success) return f;
 
 		return null;

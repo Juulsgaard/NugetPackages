@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Juulsgaard.SpreadsheetReader.Readers;
 
-internal class CsvWorkbookReader(Stream stream, string? delimiter, ILogger? logger) : BaseWorkbookReader(logger)
+internal class CsvWorkbookReader(Stream stream, string? delimiter, ILogger? logger, IFormatProvider? locale) : BaseWorkbookReader(logger, locale)
 {
 	public override IReadOnlyList<SheetInfo> Sheets { get; } = [ 
 		new() {Id = "default", Index = 0, Name = "Default"} 

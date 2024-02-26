@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Juulsgaard.SpreadsheetReader.Readers;
 
-internal abstract class BaseWorkbookReader(ILogger? logger) : IWorkbookReader
+internal abstract class BaseWorkbookReader(ILogger? logger, IFormatProvider? locale) : IWorkbookReader
 {
 	public abstract IReadOnlyList<SheetInfo> Sheets { get; }
 
@@ -49,19 +49,19 @@ internal abstract class BaseWorkbookReader(ILogger? logger) : IWorkbookReader
 	public SheetReader ReadSheet(SheetInfo sheet)
 	{
 		var reader = GetReader(sheet);
-		return SheetReader.Create(reader, logger);
+		return SheetReader.Create(reader, logger, locale);
 	}
 	
 	public SheetReader ReadSheet(string? id = null)
 	{
 		var reader = GetReaderFromId(id);
-		return SheetReader.Create(reader, logger);
+		return SheetReader.Create(reader, logger, locale);
 	}
 	
 	public SheetReader ReadSheetFromName(string name)
 	{
 		var reader = GetReaderFromName(name);
-		return SheetReader.Create(reader, logger);
+		return SheetReader.Create(reader, logger, locale);
 	}
 
 	#endregion
@@ -71,19 +71,19 @@ internal abstract class BaseWorkbookReader(ILogger? logger) : IWorkbookReader
 	public Task<SheetReader> ReadSheetAsync(SheetInfo sheet)
 	{
 		var reader = GetReader(sheet);
-		return SheetReader.CreateAsync(reader, logger);
+		return SheetReader.CreateAsync(reader, logger, locale);
 	}
 	
 	public Task<SheetReader> ReadSheetAsync(string? id = null)
 	{
 		var reader = GetReaderFromId(id);
-		return SheetReader.CreateAsync(reader, logger);
+		return SheetReader.CreateAsync(reader, logger, locale);
 	}
 	
 	public Task<SheetReader> ReadSheetFromNameAsync(string name)
 	{
 		var reader = GetReaderFromName(name);
-		return SheetReader.CreateAsync(reader, logger);
+		return SheetReader.CreateAsync(reader, logger, locale);
 	}
 
 	#endregion

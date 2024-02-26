@@ -13,30 +13,31 @@ public class SheetReader : IDisposable
 	
 	private readonly ISheetReader _reader;
 	private readonly ILogger? _logger;
+	private readonly IFormatProvider? _locale;
 
 	#region Factories
 
-	internal static async Task<SheetReader> CreateAsync(ISheetReader reader, ILogger? logger)
+	internal static async Task<SheetReader> CreateAsync(ISheetReader reader, ILogger? logger, IFormatProvider? locale)
 	{
 		for (var i = 0; i < 3; i++) {
 			var row = await reader.ReadRowAsync();
 			if (row == null) break;
 			if (row.Count < 1) continue;
 			var meta = reader.ReadColumnMeta()?.ToDictionary(x => x.Position);
-			return new SheetReader(row, meta, reader, logger);
+			return new SheetReader(row, meta, reader, logger, locale);
 		}
 
 		throw new SheetReaderException("No headers found in Sheet");
 	}
 
-	internal static SheetReader Create(ISheetReader reader, ILogger? logger)
+	internal static SheetReader Create(ISheetReader reader, ILogger? logger, IFormatProvider? locale)
 	{
 		for (var i = 0; i < 3; i++) {
 			var row = reader.ReadRow();
 			if (row == null) break;
 			if (row.Count < 1) continue;
 			var meta = reader.ReadColumnMeta()?.ToDictionary(x => x.Position);
-			return new SheetReader(row, meta, reader, logger);
+			return new SheetReader(row, meta, reader, logger, locale);
 		}
 
 		throw new SheetReaderException("No headers found in Sheet");
@@ -44,7 +45,7 @@ public class SheetReader : IDisposable
 
 	#endregion
 
-	private SheetReader(IEnumerable<string?> columns, IReadOnlyDictionary<int, ColumnMetadata>? metadata, ISheetReader reader, ILogger? logger)
+	private SheetReader(IEnumerable<string?> columns, IReadOnlyDictionary<int, ColumnMetadata>? metadata, ISheetReader reader, ILogger? logger, IFormatProvider? locale)
 	{
 		Columns = columns
 		   .Select((value, index) => new { Value = value, Index = index })
@@ -60,13 +61,15 @@ public class SheetReader : IDisposable
 
 		_reader = reader;
 		_logger = logger;
+		_locale = locale;
 	}
 
-	internal SheetReader(IReadOnlyList<SheetColumn> columns, ISheetReader reader, ILogger? logger)
+	internal SheetReader(IReadOnlyList<SheetColumn> columns, ISheetReader reader, ILogger? logger, IFormatProvider? locale)
 	{
 		Columns = columns;
 		_reader = reader;
 		_logger = logger;
+		_locale = locale;
 	}
 
 
@@ -122,7 +125,7 @@ public class SheetReader : IDisposable
 			if (i < enumerator.Current.Position) continue;
 
 			var val = row[i];
-			values.Add(val.IsEmpty() ? null : new SheetValue(enumerator.Current, new SheetRowInfo {RowNumber = _reader.Row}, val, _logger));
+			values.Add(val.IsEmpty() ? null : new SheetValue(enumerator.Current, new SheetRowInfo {RowNumber = _reader.Row}, val, _logger, _locale));
 
 			if (!enumerator.MoveNext()) break;
 		}

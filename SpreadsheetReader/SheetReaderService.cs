@@ -7,16 +7,16 @@ using Microsoft.Extensions.Logging;
 
 namespace Juulsgaard.SpreadsheetReader;
 
-public class SheetReaderService(ILogger logger)
+public class SheetReaderService(ILogger<SheetReaderService> logger)
 {
 	public IWorkbookReader CreateExcelReader(Stream stream, SheetReaderOptions? options = null)
 	{
-		return new ExcelWorkbookReader(stream, logger);
+		return new ExcelWorkbookReader(stream, logger, options?.Locale);
 	}
 	
 	public IWorkbookReader CreateCsvReader(Stream stream, SheetReaderOptions? options = null)
 	{
-		return new CsvWorkbookReader(stream, options?.Delimiter, logger);
+		return new CsvWorkbookReader(stream, options?.Delimiter, logger, options?.Locale);
 	}
     
 	public IWorkbookReader CreateReader(string? fileName, string? mimeType, Stream stream, SheetReaderOptions? options = null)
@@ -50,10 +50,10 @@ public class SheetReaderService(ILogger logger)
 	private IWorkbookReader GetReader(SheetFileTypes type, Stream stream, SheetReaderOptions? options)
 	{
 		return type switch {
-			SheetFileTypes.Excel => new ExcelWorkbookReader(stream, logger),
-			SheetFileTypes.Csv   => new CsvWorkbookReader(stream, options?.Delimiter, logger),
-			SheetFileTypes.Tsv   => new CsvWorkbookReader(stream, options?.Delimiter, logger),
-			SheetFileTypes.Txt   => new CsvWorkbookReader(stream, options?.Delimiter, logger),
+			SheetFileTypes.Excel => new ExcelWorkbookReader(stream, logger, options?.Locale),
+			SheetFileTypes.Csv   => new CsvWorkbookReader(stream, options?.Delimiter, logger, options?.Locale),
+			SheetFileTypes.Tsv   => new CsvWorkbookReader(stream, options?.Delimiter, logger, options?.Locale),
+			SheetFileTypes.Txt   => new CsvWorkbookReader(stream, options?.Delimiter, logger, options?.Locale),
 			_                    => throw new ArgumentException("Failed to determine the Import File Type")
 		};
 	}
