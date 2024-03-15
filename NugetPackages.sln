@@ -1,12 +1,18 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpreadsheetReader", "SpreadsheetReader\SpreadsheetReader.csproj", "{58BAB419-45DC-4725-B279-2FF3DBA35E3B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Spreadsheets", "Spreadsheets\Spreadsheets.csproj", "{58BAB419-45DC-4725-B279-2FF3DBA35E3B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Crud", "Crud\Crud.csproj", "{32D65EDB-4D21-4A29-BAC3-A6A4D60A8E8E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tools", "Tools\Tools.csproj", "{C13D0B80-A5B2-47FE-AEE3-FE099B50CE6E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Crud.Domain", "Crud.Domain\Crud.Domain.csproj", "{652514A1-FAEF-43AF-9246-89959A0F75B1}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{2617D5CD-7F1E-4843-A935-5C48DB305978}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Crud.Tests", "Crud.Tests\Crud.Tests.csproj", "{4E1FABC0-1192-4949-8DA7-E84498D5010A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Spreadsheets.Tests", "Spreadsheets.Tests\Spreadsheets.Tests.csproj", "{11A4BE8C-FD10-4628-A2A7-46B8F846E785}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -30,5 +36,17 @@ Global
 		{652514A1-FAEF-43AF-9246-89959A0F75B1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{652514A1-FAEF-43AF-9246-89959A0F75B1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{652514A1-FAEF-43AF-9246-89959A0F75B1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4E1FABC0-1192-4949-8DA7-E84498D5010A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4E1FABC0-1192-4949-8DA7-E84498D5010A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4E1FABC0-1192-4949-8DA7-E84498D5010A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4E1FABC0-1192-4949-8DA7-E84498D5010A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{11A4BE8C-FD10-4628-A2A7-46B8F846E785}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{11A4BE8C-FD10-4628-A2A7-46B8F846E785}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{11A4BE8C-FD10-4628-A2A7-46B8F846E785}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{11A4BE8C-FD10-4628-A2A7-46B8F846E785}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{4E1FABC0-1192-4949-8DA7-E84498D5010A} = {2617D5CD-7F1E-4843-A935-5C48DB305978}
+		{11A4BE8C-FD10-4628-A2A7-46B8F846E785} = {2617D5CD-7F1E-4843-A935-5C48DB305978}
 	EndGlobalSection
 EndGlobal

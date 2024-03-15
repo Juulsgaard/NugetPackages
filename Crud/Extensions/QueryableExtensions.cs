@@ -52,6 +52,13 @@ public static class QueryableExtensions
 		return !apply ? query : query.Skip(count);
 	}
 
+	/// <summary>
+	/// Execute the query and aggregate the result in a Lookup
+	/// </summary>
+	/// <param name="query">The query</param>
+	/// <param name="keySelector">A selector for the key</param>
+	/// <param name="valueSelector">A selector for the value</param>
+	/// <returns>A Lookup Dictionary where values with the same key are grouped into lists</returns>
 	public static async Task<Dictionary<TKey, List<TVal>>> ToLookupAsync<TModel, TKey, TVal>(
 		this IQueryable<TModel> query,
 		Func<TModel, TKey> keySelector,
@@ -73,7 +80,28 @@ public static class QueryableExtensions
 
 		return dict;
 	}
+	
+	/// <summary>
+	/// Execute the query and aggregate the result in a Lookup
+	/// </summary>
+	/// <param name="query">The query</param>
+	/// <param name="keySelector">A selector for the key</param>
+	/// <returns>A Lookup Dictionary where values with the same key are grouped into lists</returns>
+	public static Task<Dictionary<TKey, List<TModel>>> ToLookupAsync<TModel, TKey>(
+		this IQueryable<TModel> query,
+		Func<TModel, TKey> keySelector
+	) where TKey : notnull
+	{
+		return query.ToLookupAsync(keySelector, x => x);
+	}
 		
+	/// <summary>
+	/// Execute the query and aggregate the result in a Lookup
+	/// </summary>
+	/// <param name="query">The query</param>
+	/// <param name="keySelector">A selector for the key</param>
+	/// <param name="valueSelector">A selector for the value</param>
+	/// <returns>A Lookup Dictionary where values with the same key are grouped into hash sets</returns>
 	public static async Task<Dictionary<TKey, HashSet<TVal>>> ToSetLookupAsync<TModel, TKey, TVal>(
 		this IQueryable<TModel> query,
 		Func<TModel, TKey> keySelector,
@@ -96,6 +124,26 @@ public static class QueryableExtensions
 		return dict;
 	}
 	
+	/// <summary>
+	/// Execute the query and aggregate the result in a Lookup
+	/// </summary>
+	/// <param name="query">The query</param>
+	/// <param name="keySelector">A selector for the key</param>
+	/// <returns>A Lookup Dictionary where values with the same key are grouped into hash sets</returns>
+	public static Task<Dictionary<TKey, HashSet<TModel>>> ToSetLookupAsync<TModel, TKey>(
+		this IQueryable<TModel> query,
+		Func<TModel, TKey> keySelector
+	) where TKey : notnull
+	{
+		return query.ToSetLookupAsync(keySelector, x => x);
+	}
+	
+	/// <summary>
+	/// Execute the query and turn the result into a HashSet
+	/// </summary>
+	/// <param name="query">The query</param>
+	/// <param name="valueSelector">Mapping of the value</param>
+	/// <returns>A hash set with all values</returns>
 	public static async Task<HashSet<TVal>> ToSetAsync<TModel, TVal>(
 		this IQueryable<TModel> query,
 		Func<TModel, TVal> valueSelector
@@ -109,5 +157,15 @@ public static class QueryableExtensions
 		}
 
 		return set;
+	}
+	
+	/// <summary>
+	/// Execute the query and turn the result into a HashSet
+	/// </summary>
+	/// <param name="query">The query</param>
+	/// <returns>A hash set with all values</returns>
+	public static Task<HashSet<TModel>> ToSetAsync<TModel>(this IQueryable<TModel> query)
+	{
+		return query.ToSetAsync(x => x);
 	}
 }
