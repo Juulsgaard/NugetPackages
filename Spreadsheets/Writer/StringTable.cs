@@ -6,37 +6,27 @@ namespace Juulsgaard.Spreadsheets.Writer;
 public class StringTable
 {
 	private readonly SharedStringTablePart _sharedStringTable;
-	private Dictionary<string, int>? _index;
+	private readonly Dictionary<string, uint> _textLookup;
 
-	public StringTable(WorkbookPart workbook)
+	public StringTable(SharedStringTablePart sharedStringTable)
 	{
-		_sharedStringTable = workbook.GetPartsOfType<SharedStringTablePart>().Any()
-			? workbook.GetPartsOfType<SharedStringTablePart>().First()
-			: workbook.AddNewPart<SharedStringTablePart>();
-
 		// ReSharper disable once NullCoalescingConditionIsAlwaysNotNullAccordingToAPIContract
-		_sharedStringTable.SharedStringTable ??= new SharedStringTable();
-	}
-
-	private Dictionary<string, int> GetIndex()
-	{
-		if (_index is not null) return _index;
-
-		_index = _sharedStringTable.SharedStringTable.Elements<SharedStringItem>()
+		sharedStringTable.SharedStringTable ??= new SharedStringTable();
+		
+		_sharedStringTable = sharedStringTable;
+		_textLookup = sharedStringTable.SharedStringTable.Elements<SharedStringItem>()
 		   .Select((x, i) => new { x.Text?.InnerText, Index = i })
 		   .Where(x => x.InnerText is not null)
-		   .ToDictionary(x => x.InnerText!, x => x.Index);
-
-		return _index;
+		   .ToDictionary(x => x.InnerText!, x => (uint)x.Index);
 	}
 
-	public int GetTextId(string text)
+	public uint GetTextId(string text)
 	{
-		var index = GetIndex();
-		if (index.ContainsKey(text)) return index[text];
+		if (_textLookup.TryGetValue(text, out var id)) return id;
+		
 		_sharedStringTable.SharedStringTable.AppendChild(new SharedStringItem(new Text(text)));
-		var i = index.Count;
-		index.Add(text, i);
+		var i = (uint)_textLookup.Count;
+		_textLookup.Add(text, i);
 		return i;
 	}
 }
