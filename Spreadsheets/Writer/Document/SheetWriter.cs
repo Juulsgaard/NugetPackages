@@ -1,8 +1,9 @@
 ﻿using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
+using Juulsgaard.Spreadsheets.Writer.Sheets;
 
-namespace Juulsgaard.Spreadsheets.Writer;
+namespace Juulsgaard.Spreadsheets.Writer.Document;
 
 public sealed class SheetWriter : IDisposable
 {
@@ -22,11 +23,12 @@ public sealed class SheetWriter : IDisposable
 	
 	private readonly SpreadsheetDocument _document;
 	private readonly WorkbookPart _workbook;
-	private readonly Sheets _sheets;
+	private readonly DocumentFormat.OpenXml.Spreadsheet.Sheets _sheets;
 
 	private readonly List<Spreadsheet> _spreadsheets;
 	
-	internal readonly StringTable StringTable;
+	internal readonly SheetStringTable StringTable;
+	internal readonly SheetStyles Styles;
 
 	private SheetWriter(SpreadsheetDocument document)
 	{
@@ -38,11 +40,15 @@ public sealed class SheetWriter : IDisposable
 		_workbook.Workbook ??= new Workbook();
 
 		// Add Sheets to the Workbook.
-		_sheets = _workbook.Workbook.GetFirstChild<Sheets>() ?? _workbook.Workbook.AppendChild(new Sheets());
+		_sheets = _workbook.Workbook.GetFirstChild<DocumentFormat.OpenXml.Spreadsheet.Sheets>() ?? _workbook.Workbook.AppendChild(new DocumentFormat.OpenXml.Spreadsheet.Sheets());
 
 		var sharedStringTable = _workbook.GetPartsOfType<SharedStringTablePart>().FirstOrDefault() 
 		 ?? _workbook.AddNewPart<SharedStringTablePart>();
-		StringTable = new StringTable(sharedStringTable);
+		StringTable = new SheetStringTable(sharedStringTable);
+		
+		var styles = _workbook.GetPartsOfType<WorkbookStylesPart>().FirstOrDefault() 
+		 ?? _workbook.AddNewPart<WorkbookStylesPart>();
+		Styles = new SheetStyles(this, styles);
 
 		_spreadsheets = [];
 		foreach (var sheet in _sheets.Elements<Sheet>()) {
@@ -56,12 +62,13 @@ public sealed class SheetWriter : IDisposable
 	public Spreadsheet GetSpreadsheet(string name)
 	{
 		var sheet = GetSpreadsheetOrDefault(name);
+		if (sheet is not null) return sheet;
 		
 		// Add a WorksheetPart to the WorkbookPart.
 		var worksheetPart = _workbook.AddNewPart<WorksheetPart>();
 		
 		// Append a new worksheet and associate it with the workbook.
-		var nextId = _spreadsheets.Max(x => x.InternalIndex) + 1;
+		var nextId = _spreadsheets.Count < 1 ? 1 : _spreadsheets.Max(x => x.InternalIndex) + 1;
 		var sheetData = new Sheet { Id = _workbook.GetIdOfPart(worksheetPart), SheetId = nextId, Name = name };
 		_sheets.AppendChild(sheetData);
 

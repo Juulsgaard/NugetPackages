@@ -1,6 +1,6 @@
 ﻿using DocumentFormat.OpenXml.Spreadsheet;
 
-namespace Juulsgaard.Spreadsheets.Writer;
+namespace Juulsgaard.Spreadsheets.Writer.Sheets;
 
 public class SheetRow
 {
@@ -17,6 +17,7 @@ public class SheetRow
 	public readonly uint InternalIndex;
 
 	private readonly Dictionary<uint, SheetCell> _cells;
+	public IReadOnlyList<SheetCell> Cells => _cells.Values.OrderBy(x => x.Index).ToList();
 	
 	internal SheetRow(Spreadsheet spreadsheet, Row row, uint index)
 	{

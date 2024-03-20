@@ -1,12 +1,16 @@
 ﻿using System.Globalization;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Spreadsheet;
+using Juulsgaard.Spreadsheets.Writer.Document;
 using Juulsgaard.Tools.Extensions;
 
-namespace Juulsgaard.Spreadsheets.Writer;
+namespace Juulsgaard.Spreadsheets.Writer.Sheets;
 
 public class SheetCell
 {
+	private const double MaxCharWidth = 7;
+	private static readonly double CharPadding = Math.Truncate(128 / SheetCell.MaxCharWidth);
+	
 	internal static SheetCell FromCell(SheetRow row, Cell cell)
 	{
 		if (cell.CellReference?.Value is null) throw new InvalidDataException("Cell is missing an address");
@@ -20,7 +24,11 @@ public class SheetCell
 	
 	public readonly string ColumnName;
 	public readonly uint Index;
-	public int Size;
+	public double Size;
+
+	private SheetWriter Document => Row.Spreadsheet.Document;
+	private SheetStringTable StringTable => Document.StringTable;
+	private SheetStyles Styles => Document.Styles;
 
 	internal SheetCell(SheetRow row, Cell cell, uint index, string? name = null)
 	{
@@ -42,6 +50,11 @@ public class SheetCell
 		Data.DataType = null;
 	}
 
+	private double CharCountToWidth(int charCount)
+	{
+		return Math.Truncate((charCount * SheetCell.MaxCharWidth) / SheetCell.MaxCharWidth * 256) / 256;
+	}
+
 	#region Write
 
 	public void WriteText(string? value)
@@ -51,11 +64,10 @@ public class SheetCell
 			return;
 		}
 
-		var stringTable = Row.Spreadsheet.Document.StringTable;
-		var index = stringTable.GetTextId(value);
+		var index = StringTable.GetTextId(value);
 		Data.CellValue = new CellValue(index.ToString());
 		Data.DataType = new EnumValue<CellValues>(CellValues.SharedString);
-		//TODO: Estimate size
+		Size = CharCountToWidth(value.Length);
 	}
 	
 	public void WriteInt(int? value)
@@ -65,10 +77,10 @@ public class SheetCell
 			return;
 		}
 		
-		//TODO: Formatting
 		Data.CellValue = new CellValue(Convert.ToString(value.Value) ?? "");
 		Data.DataType = new EnumValue<CellValues>(CellValues.Number);
-		//TODO: Estimate size
+		Data.StyleIndex = Styles.IntegerStyle;
+		Size = CharCountToWidth(value.Value.ToString().Length);
 	}
 	
 	public void WriteFloat(float? value)
@@ -78,10 +90,23 @@ public class SheetCell
 			return;
 		}
 		
-		//TODO: Formatting
 		Data.CellValue = new CellValue(Convert.ToString(value.Value, CultureInfo.InvariantCulture));
 		Data.DataType = new EnumValue<CellValues>(CellValues.Number);
-		//TODO: Estimate size
+		Data.StyleIndex = Styles.FloatStyle;
+		Size = CharCountToWidth(value.Value.ToString("F0").Length) + 3;
+	}
+	
+	public void WriteDouble(double? value)
+	{
+		if (value is null) {
+			Clear();
+			return;
+		}
+		
+		Data.CellValue = new CellValue(Convert.ToString(value.Value, CultureInfo.InvariantCulture));
+		Data.DataType = new EnumValue<CellValues>(CellValues.Number);
+		Data.StyleIndex = Styles.FloatStyle;
+		Size = CharCountToWidth(value.Value.ToString("F0").Length) + 3;
 	}
 	
 	public void WriteBool(bool? value)
@@ -91,10 +116,10 @@ public class SheetCell
 			return;
 		}
 		
-		//TODO: Formatting
-		Data.CellValue = new CellValue(Convert.ToString(value.Value));
-		Data.DataType = new EnumValue<CellValues>(CellValues.Boolean);
-		//TODO: Estimate size
+		var index = StringTable.GetTextId(Convert.ToString(value.Value));
+		Data.CellValue = new CellValue(index.ToString());
+		Data.DataType = new EnumValue<CellValues>(CellValues.SharedString);
+		Size = 7;
 	}
 	
 	public void WriteDate(DateOnly? value)
@@ -104,10 +129,10 @@ public class SheetCell
 			return;
 		}
 		
-		//TODO: Formatting
 		Data.CellValue = new CellValue(Convert.ToString(value.Value.ToDateTime(TimeOnly.MinValue).ToOADate(), CultureInfo.InvariantCulture));
 		Data.DataType = new EnumValue<CellValues>(CellValues.Number);
-		//TODO: Estimate size
+		Data.StyleIndex = Styles.DateStyle;
+		Size = 11;
 	}
 	
 	public void WriteTime(TimeOnly? value)
@@ -117,10 +142,10 @@ public class SheetCell
 			return;
 		}
 		
-		//TODO: Formatting
 		Data.CellValue = new CellValue(Convert.ToString(value.Value.ToTimeSpan().TotalSeconds / 86400, CultureInfo.InvariantCulture));
 		Data.DataType = new EnumValue<CellValues>(CellValues.Number);
-		//TODO: Estimate size
+		Data.StyleIndex = Styles.TimeStyle;
+		Size = 9;
 	}
 	
 	public void WriteDateTime(DateTime? value)
@@ -129,11 +154,11 @@ public class SheetCell
 			Clear();
 			return;
 		}
-		
-		//TODO: Formatting
+
 		Data.CellValue = new CellValue(Convert.ToString(value.Value.ToOADate(), CultureInfo.InvariantCulture));
 		Data.DataType = new EnumValue<CellValues>(CellValues.Number);
-		//TODO: Estimate size
+		Data.StyleIndex = Styles.DateTimeStyle;
+		Size = 16;
 	}
 
 	public void WriteObject(object? value)
@@ -147,6 +172,9 @@ public class SheetCell
 				break;
 			case int i:
 				WriteInt(i);
+				break;
+			case double d:
+				WriteDouble(d);
 				break;
 			case float f:
 				WriteFloat(f);

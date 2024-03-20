@@ -1,14 +1,14 @@
 ﻿using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
 
-namespace Juulsgaard.Spreadsheets.Writer;
+namespace Juulsgaard.Spreadsheets.Writer.Document;
 
-public class StringTable
+public class SheetStringTable
 {
 	private readonly SharedStringTablePart _sharedStringTable;
 	private readonly Dictionary<string, uint> _textLookup;
 
-	public StringTable(SharedStringTablePart sharedStringTable)
+	public SheetStringTable(SharedStringTablePart sharedStringTable)
 	{
 		// ReSharper disable once NullCoalescingConditionIsAlwaysNotNullAccordingToAPIContract
 		sharedStringTable.SharedStringTable ??= new SharedStringTable();
