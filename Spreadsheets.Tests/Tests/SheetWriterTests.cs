@@ -61,6 +61,24 @@ public class SheetWriterTests
 
 		document.Save();
 	}
+	
+	[Fact]
+	public async Task EmptyTableTest()
+	{
+		Directory.CreateDirectory("Output");
+		await using var fileStream = File.Open("Output/empty_table.xlsx", FileMode.Create);
+
+		var service = new SheetWriterService(NullLogger<SheetWriterService>.Instance);
+
+		using var document = service.CreateSheetWriter(fileStream);
+		var sheet = document.GetSpreadsheet("Sheet 1");
+		var table = sheet.CreateTable<Row>();
+		
+		table.Render([]);
+		sheet.ResizeColumns();
+		
+		document.Save();
+	}
 }
 
 file class Row

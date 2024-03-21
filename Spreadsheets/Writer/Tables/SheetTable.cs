@@ -36,6 +36,12 @@ public class SheetTable<T> where T : class
 		var columns = _config.GetColumns(values);
 		_headerRow.WriteValues(columns.Select(x => x.Name));
 
+		if (values.Count <= 0) {
+			var emptyRow = _headerRow.NextRow();
+			FormatTable(0, _headerRow.Index, (uint)columns.Count, 2, columns);
+			return;
+		}
+
 		SheetRow? row = null;
 		foreach (var value in values) {
 			row = row?.NextRow() ?? _headerRow.NextRow();
