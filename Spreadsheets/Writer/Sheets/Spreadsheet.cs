@@ -28,7 +28,7 @@ public class Spreadsheet
 	private readonly TableParts _tableParts;
 	private readonly List<SheetTableDefinition> _tableDefinitions;
 
-	private uint? _maxRowIndex;
+	private uint NextRowIndex => _rows.Count <= 0 ? 0 : _rows.Values.Max(x => x.Index) + 1;
 	
 	internal Spreadsheet(SheetWriter document, WorksheetPart worksheet, Sheet sheet)
 	{
@@ -61,7 +61,6 @@ public class Spreadsheet
 	
 	private SheetRow GetRow(uint rowIndex)
 	{
-		_maxRowIndex = Math.Max(_maxRowIndex ?? 0, rowIndex);
 		var row = _rows.GetValueOrDefault(rowIndex);
 		if (row is not null) return row;
 
@@ -78,7 +77,6 @@ public class Spreadsheet
 	internal SheetRow GetNextRow(SheetRow prevRow)
 	{
 		var rowIndex = prevRow.Index + 1;
-		_maxRowIndex = Math.Max(_maxRowIndex ?? 0, rowIndex);
 		var row = _rows.GetValueOrDefault(rowIndex);
 		if (row is not null) return row;
 		
@@ -131,9 +129,8 @@ public class Spreadsheet
 	{
 		var config = new SheetTableConfig<T>(Name);
 		configure?.Invoke(config);
-
-		var nextRow = _maxRowIndex.HasValue ? _maxRowIndex.Value + 1 : 0;
-		var headerRow = GetRow(nextRow + offset);
+		
+		var headerRow = GetRow(NextRowIndex + offset);
 		return new SheetTable<T>(this, config, headerRow);
 	}
 
