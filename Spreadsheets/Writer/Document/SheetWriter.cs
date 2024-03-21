@@ -1,7 +1,9 @@
-﻿using DocumentFormat.OpenXml;
+﻿using System.Text.RegularExpressions;
+using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
 using Juulsgaard.Spreadsheets.Writer.Sheets;
+using Juulsgaard.Spreadsheets.Writer.Tables;
 
 namespace Juulsgaard.Spreadsheets.Writer.Document;
 
@@ -37,6 +39,7 @@ public sealed class SheetWriter : IDisposable
 	private readonly DocumentFormat.OpenXml.Spreadsheet.Sheets _sheets;
 
 	private readonly List<Spreadsheet> _spreadsheets;
+	private readonly Dictionary<string, SheetTableDefinitionPart> _tableDefinitions;
 	
 	internal readonly SheetStringTable StringTable;
 	internal readonly SheetStyles Styles;
@@ -68,6 +71,13 @@ public sealed class SheetWriter : IDisposable
 			if (worksheet is not WorksheetPart part) continue;
 			_spreadsheets.Add(new Spreadsheet(this, part, sheet));
 		}
+
+		_tableDefinitions = [];
+		foreach (var tableDef in _workbook.GetPartsOfType<TableDefinitionPart>()) {
+			if (tableDef.Table.Id?.Value is null) continue;
+			var id = _workbook.GetIdOfPart(tableDef);
+			_tableDefinitions.Add(id, SheetTableDefinitionPart.FromPart(tableDef, id));
+		}
 	}
 
 	/// <summary>
@@ -91,6 +101,22 @@ public sealed class SheetWriter : IDisposable
 		sheet = new Spreadsheet(this, worksheetPart, sheetData);
 		_spreadsheets.Add(sheet);
 		return sheet;
+	}
+	
+	/// <summary>
+	/// Create a new spreadsheet
+	/// </summary>
+	/// <param name="name">The name of the Sheet</param>
+	public Spreadsheet CreateSpreadsheet(string name)
+	{
+		var names = _spreadsheets.Select(x => x.Name).ToHashSet();
+		var sheetName = name;
+		var count = 0;
+		while (names.Contains(sheetName)) {
+			sheetName = $"{name}{++count}";
+		}
+		
+		return GetSpreadsheet(sheetName);
 	}
 	
 	/// <summary>
@@ -121,5 +147,37 @@ public sealed class SheetWriter : IDisposable
 	public void Save()
 	{
 		_document.Save();
+	}
+	
+	internal SheetTableDefinitionPart CreateTableDefinition(WorksheetPart worksheet, string name)
+	{
+		var part = worksheet.AddNewPart<TableDefinitionPart>();
+		// ReSharper disable once NullCoalescingConditionIsAlwaysNotNullAccordingToAPIContract
+		part.Table ??= new Table();
+		
+		var id = worksheet.GetIdOfPart(part);
+		var index = _tableDefinitions.Count <= 0 ? 0 : _tableDefinitions.Values.Max(x => x.Index) + 1;
+
+		var names = _tableDefinitions.Values.Select(x => x.Name).ToHashSet();
+		var displayNames = _tableDefinitions.Values.Select(x => x.DisplayName).ToHashSet();
+
+		var tableName = name;
+		var displayName = Regex.Replace(tableName.Trim(), @"\W+", "_");
+
+		var count = 0;
+		while (names.Contains(tableName) || displayNames.Contains(displayName)) {
+			tableName = $"{name}{++count}";
+			displayName = Regex.Replace(tableName.Trim(), @"\W+", "_");
+		}
+		
+		var tableDef = new SheetTableDefinitionPart(part, id, index, tableName, displayName);
+		
+		_tableDefinitions.Add(id, tableDef);
+		return tableDef;
+	}
+	
+	internal SheetTableDefinitionPart? GetTableDefinition(string id)
+	{
+		return _tableDefinitions.GetValueOrDefault(id);
 	}
 }

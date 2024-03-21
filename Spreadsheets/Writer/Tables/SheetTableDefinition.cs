@@ -10,19 +10,16 @@ namespace Juulsgaard.Spreadsheets.Writer.Tables;
 /// </summary>
 public class SheetTableDefinition
 {
-	internal static SheetTableDefinition FromTable(Spreadsheet spreadsheet, TableDefinitionPart definitionPart, TablePart table)
+	internal static SheetTableDefinition FromTable(Spreadsheet spreadsheet, SheetTableDefinitionPart definitionPart, TablePart table)
 	{
 		if (definitionPart.Table is null) throw new InvalidDataException("Table Data is missing");
 		if (definitionPart.Table.Reference?.Value is null) throw new InvalidDataException("Table doesn't have a reference");
 		var range = SheetRange.FromReference(definitionPart.Table.Reference.Value);
 
-		if (definitionPart.Table.DisplayName?.Value is null) throw new InvalidDataException("Table doesn't have a Name");
-		var name = definitionPart.Table.DisplayName.Value;
-
 		if (definitionPart.Table.Id?.Value is null) throw new InvalidDataException("Table doesn't have an ID");
 		var index = definitionPart.Table.Id.Value - 1;
 		
-		return new SheetTableDefinition(spreadsheet, definitionPart, table, index, name, range);
+		return new SheetTableDefinition(spreadsheet, definitionPart, table, index, range);
 	}
 	
 	private static TableStyleInfo GetDefaultStyleInfo() => new() {
@@ -34,10 +31,9 @@ public class SheetTableDefinition
 	};
 	
 	private readonly Spreadsheet _spreadsheet;
-	private readonly TableDefinitionPart _definitionPart;
+	private readonly SheetTableDefinitionPart _definitionPart;
 	public readonly uint Index;
 	public readonly uint InternalIndex;
-	public readonly string Name;
 	public readonly SheetRange Range;
 	public readonly Table Data;
 
@@ -45,22 +41,16 @@ public class SheetTableDefinition
 	private readonly TableColumns _columns;
 	private readonly TableStyleInfo _styles;
 
-	internal SheetTableDefinition(Spreadsheet spreadsheet, TableDefinitionPart definitionPart, TablePart table, uint index, string name, SheetRange range)
+	internal SheetTableDefinition(Spreadsheet spreadsheet, SheetTableDefinitionPart definitionPart, TablePart table, uint index, SheetRange range)
 	{
 		_spreadsheet = spreadsheet;
 		_definitionPart = definitionPart;
 		Index = index;
 		InternalIndex = Index + 1;
-		Name = name;
 		Range = range;
 
-		// ReSharper disable once NullCoalescingConditionIsAlwaysNotNullAccordingToAPIContract
-		definitionPart.Table ??= new Table();
 		Data = definitionPart.Table;
-		Data.Id = InternalIndex;
 		Data.Reference = range.ToReference();
-		Data.Name = name;
-		Data.DisplayName = Regex.Replace(name.Trim(), @"\W+", "_");
 		Data.TotalsRowShown = false;
 		
 		_autoFilter = Data.GetFirstChild<AutoFilter>() ?? Data.AppendChild(new AutoFilter());

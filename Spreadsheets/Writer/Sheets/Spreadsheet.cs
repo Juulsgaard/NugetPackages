@@ -28,6 +28,8 @@ public class Spreadsheet
 	private readonly TableParts _tableParts;
 	private readonly List<SheetTableDefinition> _tableDefinitions;
 
+	private uint? _maxRowIndex;
+	
 	internal Spreadsheet(SheetWriter document, WorksheetPart worksheet, Sheet sheet)
 	{
 		Document = document;
@@ -46,9 +48,9 @@ public class Spreadsheet
 		_tableDefinitions = [];
 		foreach (var table in _tableParts.Elements<TablePart>()) {
 			if (table.Id?.Value is null) continue;
-			if (!_worksheetPart.TryGetPartById(table.Id.Value, out var definitionPart)) continue;
-			if (definitionPart is not TableDefinitionPart part) continue;
-			_tableDefinitions.Add(SheetTableDefinition.FromTable(this, part, table));
+			var def = Document.GetTableDefinition(table.Id.Value);
+			if (def is null) continue;
+			_tableDefinitions.Add(SheetTableDefinition.FromTable(this, def, table));
 		}
 		
 		_rows = Data.Elements<Row>()
@@ -59,6 +61,7 @@ public class Spreadsheet
 	
 	private SheetRow GetRow(uint rowIndex)
 	{
+		_maxRowIndex = Math.Max(_maxRowIndex ?? 0, rowIndex);
 		var row = _rows.GetValueOrDefault(rowIndex);
 		if (row is not null) return row;
 
@@ -75,6 +78,7 @@ public class Spreadsheet
 	internal SheetRow GetNextRow(SheetRow prevRow)
 	{
 		var rowIndex = prevRow.Index + 1;
+		_maxRowIndex = Math.Max(_maxRowIndex ?? 0, rowIndex);
 		var row = _rows.GetValueOrDefault(rowIndex);
 		if (row is not null) return row;
 		
@@ -121,12 +125,16 @@ public class Spreadsheet
 	/// Create a table in the sheet
 	/// </summary>
 	/// <param name="configure">Optional configuration</param>
+	/// <param name="offset">Optional vertical offset for table</param>
 	/// <typeparam name="T">The type of the rows</typeparam>
-	public SheetTable<T> CreateTable<T>(Action<SheetTableConfig<T>>? configure = null) where T : class
+	public SheetTable<T> CreateTable<T>(Action<SheetTableConfig<T>>? configure = null, uint offset = 0) where T : class
 	{
 		var config = new SheetTableConfig<T>(Name);
 		configure?.Invoke(config);
-		return new SheetTable<T>(this, config, GetRow(0));
+
+		var nextRow = _maxRowIndex.HasValue ? _maxRowIndex.Value + 1 : 0;
+		var headerRow = GetRow(nextRow + offset);
+		return new SheetTable<T>(this, config, headerRow);
 	}
 
 	/// <summary>
@@ -166,14 +174,14 @@ public class Spreadsheet
 
 	internal SheetTableDefinition GetTableDefinition(SheetRange range, string name)
 	{
-		var part = _worksheetPart.AddNewPart<TableDefinitionPart>();
+		var part = Document.CreateTableDefinition(_worksheetPart, name);
 		
-		var tableData = new TablePart { Id = _worksheetPart.GetIdOfPart(part) };
+		var tableData = new TablePart { Id = part.Id };
 		_tableParts.AppendChild(tableData);
 		_tableParts.Count = (uint)_tableDefinitions.Count + 1;
 
 		var index = (uint)_tableDefinitions.Count;
-		var table = new SheetTableDefinition(this, part, tableData, index, name, range);
+		var table = new SheetTableDefinition(this, part, tableData, index, range);
 		_tableDefinitions.Add(table);
 		return table;
 	}
