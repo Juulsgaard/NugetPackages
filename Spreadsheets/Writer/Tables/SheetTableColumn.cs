@@ -5,22 +5,24 @@ namespace Juulsgaard.Spreadsheets.Writer.Tables;
 
 internal interface ISheetTableColumn
 {
-	public string Name { get; }
+	public string Name { get; set; }
 	public object? GetValue(object data);
 }
 
-internal record SheetTableColumn(PropertyInfo Prop, string Name) : ISheetTableColumn
+internal class SheetTableColumn(PropertyInfo prop, string name) : ISheetTableColumn
 {
-	public object? GetValue(object data) => Prop.GetValue(data);
+	public string Name { get; set; } = name;
+	public object? GetValue(object data) => prop.GetValue(data);
 }
 
-internal record SheetTableDictColumn(PropertyInfo Prop, object Key, string Name) : ISheetTableColumn
+internal class SheetTableDictColumn(PropertyInfo prop, object key, string name) : ISheetTableColumn
 {
+	public string Name { get; set; } = name;
 	public object? GetValue(object data)
 	{
-		var propVal = Prop.GetValue(data);
+		var propVal = prop.GetValue(data);
 		if (propVal is not IDictionary dict) return null;
-		var val = dict[Key];
+		var val = dict[key];
 		return val;
 	}
 }

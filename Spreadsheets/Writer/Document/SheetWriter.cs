@@ -5,8 +5,15 @@ using Juulsgaard.Spreadsheets.Writer.Sheets;
 
 namespace Juulsgaard.Spreadsheets.Writer.Document;
 
+/// <summary>
+/// An Excel document reference
+/// </summary>
 public sealed class SheetWriter : IDisposable
 {
+	/// <summary>
+	/// Create a new Document from scratch
+	/// </summary>
+	/// <param name="outputStream">The stream to store the file in</param>
 	public static SheetWriter CreateDocument(Stream outputStream)
 	{
 		// By default, Editable = true, and Type = xlsx.
@@ -14,6 +21,10 @@ public sealed class SheetWriter : IDisposable
 		return new SheetWriter(document);
 	}
 	
+	/// <summary>
+	/// Open an existing Excel file for editing
+	/// </summary>
+	/// <param name="fileStream">The stream containing the file</param>
 	public static SheetWriter EditDocument(Stream fileStream)
 	{
 		// By default, AutoSave = true, and Type = xlsx.
@@ -59,6 +70,11 @@ public sealed class SheetWriter : IDisposable
 		}
 	}
 
+	/// <summary>
+	/// Get a spreadsheet with the given name.
+	/// If one does not exist it will be created.
+	/// </summary>
+	/// <param name="name">The name of the Sheet</param>
 	public Spreadsheet GetSpreadsheet(string name)
 	{
 		var sheet = GetSpreadsheetOrDefault(name);
@@ -77,21 +93,31 @@ public sealed class SheetWriter : IDisposable
 		return sheet;
 	}
 	
+	/// <summary>
+	/// Get an existing spreadsheet by Index
+	/// </summary>
+	/// <param name="index">Index of the sheet</param>
 	public Spreadsheet? GetSpreadsheetOrDefault(uint index)
 	{
 		return _spreadsheets.FirstOrDefault(x => x.Index == index);
 	}
 	
+	/// <summary>
+	/// Get an existing spreadsheet by name
+	/// </summary>
+	/// <param name="name">Name of the sheet</param>
 	public Spreadsheet? GetSpreadsheetOrDefault(string name)
 	{
 		return _spreadsheets.FirstOrDefault(x => x.Name == name);
 	}
 
+	/// <inheritdoc cref="SpreadsheetDocument.Dispose"/>
 	public void Dispose()
 	{
 		_document.Dispose();
 	}
 
+	/// <inheritdoc cref="SpreadsheetDocument.Save"/>
 	public void Save()
 	{
 		_document.Save();

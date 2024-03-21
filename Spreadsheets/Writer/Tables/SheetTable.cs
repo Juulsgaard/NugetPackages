@@ -1,8 +1,11 @@
-﻿using System.Collections;
-using Juulsgaard.Spreadsheets.Writer.Sheets;
+﻿using Juulsgaard.Spreadsheets.Writer.Sheets;
 
 namespace Juulsgaard.Spreadsheets.Writer.Tables;
 
+/// <summary>
+/// A table in the document
+/// </summary>
+/// <typeparam name="T">The type of the table rows</typeparam>
 public class SheetTable<T> where T : class
 {
 	private readonly Spreadsheet _spreadsheet;
@@ -20,7 +23,11 @@ public class SheetTable<T> where T : class
 		Name = config.Name;
 	}
 	
-	
+	/// <summary>
+	/// Render the Table to the document
+	/// </summary>
+	/// <param name="values">The values to render</param>
+	/// <exception cref="InvalidOperationException">Throws an exception when run more than once</exception>
 	public void Render(IReadOnlyList<T?> values)
 	{
 		if (_rendered) throw new InvalidOperationException("A table cannot be rendered more than once");

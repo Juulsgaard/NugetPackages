@@ -5,9 +5,12 @@ using Juulsgaard.Spreadsheets.Writer.Sheets;
 
 namespace Juulsgaard.Spreadsheets.Writer.Tables;
 
+/// <summary>
+/// A wrapper class for Excel Table Definitions
+/// </summary>
 public class SheetTableDefinition
 {
-	public static SheetTableDefinition FromTable(Spreadsheet spreadsheet, TableDefinitionPart definitionPart, TablePart table)
+	internal static SheetTableDefinition FromTable(Spreadsheet spreadsheet, TableDefinitionPart definitionPart, TablePart table)
 	{
 		if (definitionPart.Table is null) throw new InvalidDataException("Table Data is missing");
 		if (definitionPart.Table.Reference?.Value is null) throw new InvalidDataException("Table doesn't have a reference");
@@ -42,7 +45,7 @@ public class SheetTableDefinition
 	private readonly TableColumns _columns;
 	private readonly TableStyleInfo _styles;
 
-	public SheetTableDefinition(Spreadsheet spreadsheet, TableDefinitionPart definitionPart, TablePart table, uint index, string name, SheetRange range)
+	internal SheetTableDefinition(Spreadsheet spreadsheet, TableDefinitionPart definitionPart, TablePart table, uint index, string name, SheetRange range)
 	{
 		_spreadsheet = spreadsheet;
 		_definitionPart = definitionPart;

@@ -32,6 +32,10 @@ public class SheetRow
 		   .ToDictionary(x => x.Index);
 	}
 
+	/// <summary>
+	/// Get a cell by index
+	/// </summary>
+	/// <param name="index">Index of the cell</param>
 	public SheetCell GetCell(uint index)
 	{
 		var cell = _cells.GetValueOrDefault(index);
@@ -47,6 +51,11 @@ public class SheetRow
 		_cells.Add(index, cell);
 		return cell;
 	}
+	
+	/// <summary>
+	/// Get a cell by column address
+	/// </summary>
+	/// <param name="columnName">The address</param>
 	public SheetCell GetCell(string columnName)
 	{
 		var index = SheetWriterHelper.ColumnNameToIndex(columnName);
@@ -63,11 +72,19 @@ public class SheetRow
 		return cell;
 	}
 
+	/// <summary>
+	/// Get the next row in the sheet
+	/// </summary>
 	public SheetRow NextRow()
 	{
 		return Spreadsheet.GetNextRow(this);
 	}
 
+	/// <summary>
+	/// Write a list of values to the row
+	/// </summary>
+	/// <param name="values">The values to write</param>
+	/// <param name="offset">Specify how far into the row the values should start</param>
 	public void WriteValues(IEnumerable<object?> values, uint offset = 0)
 	{
 		SheetCell? cell = null;

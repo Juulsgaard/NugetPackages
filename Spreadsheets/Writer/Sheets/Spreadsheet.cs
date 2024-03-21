@@ -5,6 +5,9 @@ using Juulsgaard.Spreadsheets.Writer.Tables;
 
 namespace Juulsgaard.Spreadsheets.Writer.Sheets;
 
+/// <summary>
+/// A sheet in the Excel document
+/// </summary>
 public class Spreadsheet
 {
 	private static readonly uint CellPadding = 1;
@@ -84,16 +87,41 @@ public class Spreadsheet
 		return row;
 	}
 
+	/// <summary>
+	/// Access a cell in the sheet
+	/// </summary>
+	/// <param name="colIndex">Column index (X coordinate)</param>
+	/// <param name="rowIndex">Row index (Y coordinate)</param>
 	public SheetCell GetCell(uint colIndex, uint rowIndex)
 	{
 		return GetRow(rowIndex).GetCell(colIndex);
 	}
 	
+	/// <summary>
+	/// Access a cell in the sheet
+	/// </summary>
+	/// <param name="colName">The column address</param>
+	/// <param name="rowIndex">The row index</param>
 	public SheetCell GetCell(string colName, uint rowIndex)
 	{
 		return GetRow(rowIndex).GetCell(colName);
 	}
+	
+	/// <summary>
+	/// Access a cell in the sheet
+	/// </summary>
+	/// <param name="address">The Excel address of the cell</param>
+	public SheetCell GetCell(string address)
+	{
+		var (col, row) = SheetWriterHelper.GetCellCoordinates(address);
+		return GetCell(col, row);
+	}
 
+	/// <summary>
+	/// Create a table in the sheet
+	/// </summary>
+	/// <param name="configure">Optional configuration</param>
+	/// <typeparam name="T">The type of the rows</typeparam>
 	public SheetTable<T> CreateTable<T>(Action<SheetTableConfig<T>>? configure = null) where T : class
 	{
 		var config = new SheetTableConfig<T>(Name);
@@ -101,6 +129,12 @@ public class Spreadsheet
 		return new SheetTable<T>(this, config, GetRow(0));
 	}
 
+	/// <summary>
+	/// Auto-fit columns to the content of the sheet.
+	/// </summary>
+	/// <remarks>This uses size approximations</remarks>
+	/// <param name="minSize">The minimum column width</param>
+	/// <param name="maxSize">The maximum column width</param>
 	public void ResizeColumns(double minSize = 10, double maxSize = 40)
 	{
 		var maxSizes = new Dictionary<uint, double>();

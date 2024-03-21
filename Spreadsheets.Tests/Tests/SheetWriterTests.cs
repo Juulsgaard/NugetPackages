@@ -21,6 +21,7 @@ public class SheetWriterTests
 				c.Name = "Alternate Table Name";
 				c.Property(x => x.Hidden).Hide();
 				c.Property(x => x.Day).SetName("Special Day");
+				// c.Property(x => x.Dictionary).UsePrefix("Fix");
 			}
 		);
 
@@ -35,6 +36,7 @@ public class SheetWriterTests
 					Time = TimeOnly.FromDateTime(DateTime.Now),
 					Married = false,
 					Dictionary = new() {
+						{ "Age", "Duplicate" },
 						{ "Dict 1", "Value 1" },
 						{ "Dict 2", "Value 2" },
 					}

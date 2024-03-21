@@ -3,6 +3,9 @@ using DocumentFormat.OpenXml.Spreadsheet;
 
 namespace Juulsgaard.Spreadsheets.Writer.Document;
 
+/// <summary>
+/// A wrapper for the SharedStringTable in the Excel document
+/// </summary>
 public class SheetStringTable
 {
 	private readonly SharedStringTablePart _sharedStringTable;
@@ -20,6 +23,11 @@ public class SheetStringTable
 		   .ToDictionary(x => x.InnerText!, x => (uint)x.Index);
 	}
 
+	/// <summary>
+	/// Get the ID of a string in the String Table
+	/// </summary>
+	/// <param name="text">The text to look for</param>
+	/// <returns></returns>
 	public uint GetTextId(string text)
 	{
 		if (_textLookup.TryGetValue(text, out var id)) return id;

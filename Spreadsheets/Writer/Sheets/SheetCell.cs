@@ -6,6 +6,9 @@ using Juulsgaard.Tools.Extensions;
 
 namespace Juulsgaard.Spreadsheets.Writer.Sheets;
 
+/// <summary>
+/// A cell in a spreadsheet
+/// </summary>
 public class SheetCell
 {
 	private const double MaxCharWidth = 7;
@@ -39,15 +42,22 @@ public class SheetCell
 		// TODO: Estimate size on load
 	}
 
+	/// <summary>
+	/// Get the next cell in the current row
+	/// </summary>
 	public SheetCell NextCell()
 	{
 		return Row.GetNextCell(this);
 	}
 
+	/// <summary>
+	/// Remove the cell content
+	/// </summary>
 	public void Clear()
 	{
 		Data.CellValue = null;
 		Data.DataType = null;
+		Data.StyleIndex = null;
 	}
 
 	private double CharCountToWidth(int charCount)
@@ -57,6 +67,7 @@ public class SheetCell
 
 	#region Write
 
+	/// Write text content to the cell
 	public void WriteText(string? value)
 	{
 		if (value.IsEmpty()) {
@@ -70,6 +81,7 @@ public class SheetCell
 		Size = CharCountToWidth(value.Length);
 	}
 	
+	/// Write an integer to the cell
 	public void WriteInt(int? value)
 	{
 		if (value is null) {
@@ -83,6 +95,7 @@ public class SheetCell
 		Size = CharCountToWidth(value.Value.ToString().Length);
 	}
 	
+	/// Write a float to the cell
 	public void WriteFloat(float? value)
 	{
 		if (value is null) {
@@ -96,6 +109,7 @@ public class SheetCell
 		Size = CharCountToWidth(value.Value.ToString("F0").Length) + 3;
 	}
 	
+	/// Write a double to the cell
 	public void WriteDouble(double? value)
 	{
 		if (value is null) {
@@ -109,6 +123,7 @@ public class SheetCell
 		Size = CharCountToWidth(value.Value.ToString("F0").Length) + 3;
 	}
 	
+	/// Write a boolean to the cell
 	public void WriteBool(bool? value)
 	{
 		if (value is null) {
@@ -122,6 +137,7 @@ public class SheetCell
 		Size = 7;
 	}
 	
+	/// Write a date to the cell
 	public void WriteDate(DateOnly? value)
 	{
 		if (value is null) {
@@ -135,6 +151,7 @@ public class SheetCell
 		Size = 11;
 	}
 	
+	/// Write a time to the cell
 	public void WriteTime(TimeOnly? value)
 	{
 		if (value is null) {
@@ -148,6 +165,7 @@ public class SheetCell
 		Size = 9;
 	}
 	
+	/// Write a date and time to the cell
 	public void WriteDateTime(DateTime? value)
 	{
 		if (value is null) {
@@ -161,6 +179,8 @@ public class SheetCell
 		Size = 16;
 	}
 
+	/// Write an object to the cell.
+	/// The formatting is based on the underlying type.
 	public void WriteObject(object? value)
 	{
 		switch (value) {

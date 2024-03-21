@@ -3,6 +3,9 @@ using DocumentFormat.OpenXml.Spreadsheet;
 
 namespace Juulsgaard.Spreadsheets.Writer.Document;
 
+/// <summary>
+/// A handler for document styles
+/// </summary>
 public class SheetStyles
 {
 	private readonly SheetWriter _document;
@@ -27,12 +30,22 @@ public class SheetStyles
 		_cellFormats = Data.CellFormats;
 	}
 
+	/// The default style for Dates
 	public uint DateStyle => GetNumberFormat(14);
+	/// The default style for Time
 	public uint TimeStyle => GetNumberFormat(21);
+	/// The default style for Date and Time
 	public uint DateTimeStyle => GetNumberFormat(22);
+	/// The default style for Integers
 	public uint IntegerStyle => GetNumberFormat(1);
+	/// The default style for Decimal Numbers
 	public uint FloatStyle => GetNumberFormat(2);
 
+	/// <summary>
+	/// Get a predefined number format based on the built in styles 
+	/// </summary>
+	/// <param name="formatId">The built in formatId</param>
+	/// <returns></returns>
 	public uint GetNumberFormat(uint formatId)
 	{
 		var formats = _cellFormats.Elements<CellFormat>().ToList();
