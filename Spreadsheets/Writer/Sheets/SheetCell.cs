@@ -211,6 +211,9 @@ public class SheetCell
 			case DateTime dt:
 				WriteDateTime(dt);
 				break;
+			default:
+				WriteText(value.ToString());
+				break;
 		}
 	}
 
