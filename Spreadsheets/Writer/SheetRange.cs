@@ -1,6 +1,4 @@
-﻿using System.ComponentModel;
-
-namespace Juulsgaard.Spreadsheets.Writer;
+﻿namespace Juulsgaard.Spreadsheets.Writer;
 
 /// <summary>
 /// Defines a 2D range of data in a sheet

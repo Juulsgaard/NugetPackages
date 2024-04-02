@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Crud.Tests.Entities;
+﻿namespace Crud.Tests.Entities;
 
 public class OwnerEntity
 {

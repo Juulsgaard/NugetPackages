@@ -1,6 +1,4 @@
-﻿using DocumentFormat.OpenXml.Wordprocessing;
-
-namespace Juulsgaard.Spreadsheets.Writer.Attributes;
+﻿namespace Juulsgaard.Spreadsheets.Writer.Attributes;
 
 /// <summary>
 /// Assign metadata to a Sheet Column

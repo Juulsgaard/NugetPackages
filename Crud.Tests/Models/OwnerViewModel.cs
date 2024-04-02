@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace Crud.Tests.Models;
+﻿namespace Crud.Tests.Models;
 
 public class OwnerViewModel
 {

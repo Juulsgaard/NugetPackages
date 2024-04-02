@@ -1,4 +1,3 @@
-using System;
 using AutoMapper;
 using Crud.Tests.Database;
 using Microsoft.EntityFrameworkCore;
