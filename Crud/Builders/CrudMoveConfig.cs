@@ -1,12 +1,11 @@
 using System.Linq.Expressions;
 using AutoMapper;
 using Juulsgaard.Crud.Domain.Interfaces;
-using Juulsgaard.Crud.Exceptions;
+using Juulsgaard.Crud.Extensions;
 using Juulsgaard.Crud.Models;
 using Juulsgaard.Crud.Transactions;
 using Juulsgaard.Tools.Exceptions;
 using Microsoft.EntityFrameworkCore;
-using Serilog;
 
 namespace Juulsgaard.Crud.Builders;
 
@@ -285,21 +284,8 @@ public class CrudMoveConfig<TModel> where TModel : class
 		try {
 			await Context.SaveChangesAsync();
 		}
-		catch (DbUpdateConcurrencyException e) {
-			Log.Error(e, "Concurrency error while moving {EntityName}", Target.EntityName);
-			throw new DatabaseConflictException(
-				ExceptionLookup?.Concurrency ?? $"Someone else has edited this {Target.EntityName}",
-				e.InnerException
-			);
-		}
 		catch (DbUpdateException e) {
-			Log.Error(
-				e,
-				"Database error while moving {EntityName}: {InnerMessage}",
-				Target.EntityName,
-				e.InnerException?.Message ?? "No Details"
-			);
-			throw new DatabaseException(ExceptionLookup?.Default ?? $"Failed to move {Target.EntityName}", e.InnerException);
+			throw e.ProcessAsMove(Target.EntityName, ExceptionLookup);
 		}
 	}
 

@@ -1,5 +1,6 @@
 ﻿using System.Net;
 using Juulsgaard.Tools.Extensions;
+using Serilog;
 
 namespace Juulsgaard.Crud.Exceptions;
 
@@ -16,4 +17,11 @@ public class DatabaseConflictException : DatabaseException
     }
 
     public override HttpStatusCode StatusCode => HttpStatusCode.Conflict;
+
+    internal ILogger DecorateLogger(ILogger logger)
+    {
+        if (IndexName.IsNotEmpty()) logger = logger.ForContext(nameof(IndexName), IndexName);
+        if (PropertyName.IsNotEmpty()) logger = logger.ForContext(nameof(PropertyName), PropertyName);
+        return logger;
+    }
 }

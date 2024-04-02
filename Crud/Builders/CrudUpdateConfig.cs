@@ -1,15 +1,11 @@
 using System.Linq.Expressions;
 using AutoMapper;
-using EntityFramework.Exceptions.Common;
 using Juulsgaard.Crud.Domain.Interfaces;
-using Juulsgaard.Crud.Exceptions;
+using Juulsgaard.Crud.Extensions;
 using Juulsgaard.Crud.Models;
 using Juulsgaard.Crud.Monitoring;
 using Juulsgaard.Tools.Exceptions;
-using Juulsgaard.Tools.Extensions;
 using Microsoft.EntityFrameworkCore;
-using Npgsql;
-using Serilog;
 
 namespace Juulsgaard.Crud.Builders;
 
@@ -338,51 +334,15 @@ public class CrudUpdateConfig<TModel, TUpdate> where TModel : class
 	
 	private async ValueTask SaveAndHandleErrors()
 	{
+		if (!WillSave) return;
+		
 		try {
-			if (WillSave) {
-				await Context.SaveChangesAsync();
-			}
+			await Context.SaveChangesAsync();
 		}
-		catch (DbUpdateConcurrencyException e) {
-			Log.Error(e, "Concurrency error while updating {EntityName}", Target.EntityName);
-			throw new DatabaseConflictException(
-				ExceptionLookup?.Concurrency ?? $"Someone else has edited this {Target.EntityName}",
-				e.InnerException
-			);
+		catch (DbUpdateException exception) {
+			throw exception.ProcessAsUpdate(Target.EntityName, ExceptionLookup);
 		}
-		catch (UniqueConstraintException e) {
-			Log.Error(e, "Update of {EntityName} violates Unique Constraint", Target.EntityName);
-			if (e.InnerException is PostgresException pe) {
-				var prop = pe.Data.ReadValueOrDefault("ConstraintName")?.ToString()?.Split('_')[^1];
-			}
-			throw new DatabaseConflictException(
-				ExceptionLookup?.UniqueConflict ?? $"This version of {Target.EntityName} already exists",
-				e.InnerException
-			);
-		}
-		catch (CannotInsertNullException e) {
-			var columnName = (string?)e.InnerException?.Data.ReadValueOrDefault("ColumnName");
-			Log.Error(
-				e,
-				"Tried to insert null in non-nullable field ({ColumnName}) while updating {EntityName}",
-				columnName ?? "N/A",
-				Target.EntityName
-			);
-			throw new DatabaseException(
-				ExceptionLookup?.NullInsert
-			 ?? $"Cannot update {Target.EntityName} with null value{(columnName != null ? $" - {columnName}" : "")}",
-				e.InnerException
-			);
-		}
-		catch (DbUpdateException e) {
-			Log.Error(
-				e,
-				"Database error while updating {EntityName}: {InnerMessage}",
-				Target.EntityName,
-				e.InnerException?.Message ?? "No Details"
-			);
-			throw new DatabaseException(ExceptionLookup?.Default ?? $"Failed to update {Target.EntityName}", e.InnerException);
-		}
+		
 	}
 
 	/// <summary>

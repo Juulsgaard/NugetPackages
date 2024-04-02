@@ -1,14 +1,11 @@
 ﻿using System.Linq.Expressions;
 using AutoMapper;
-using EntityFramework.Exceptions.Common;
 using Juulsgaard.Crud.Domain.Interfaces;
-using Juulsgaard.Crud.Exceptions;
+using Juulsgaard.Crud.Extensions;
 using Juulsgaard.Crud.Models;
 using Juulsgaard.Crud.Transactions;
 using Juulsgaard.Tools.Exceptions;
-using Juulsgaard.Tools.Extensions;
 using Microsoft.EntityFrameworkCore;
-using Serilog;
 
 namespace Juulsgaard.Crud.Builders;
 
@@ -195,43 +192,13 @@ public class CrudArchiveConfig<TModel> where TModel : class, IArchivable
 
 	private async ValueTask SaveAndHandleErrors()
 	{
+		if (!WillSave) return;
+		
 		try {
-			if (WillSave) {
-				await Context.SaveChangesAsync();
-			}
-		}
-		catch (DbUpdateConcurrencyException e) {
-			Log.Error(e, "Concurrency error while archiving {EntityName}", Target.EntityName);
-			throw new DatabaseConflictException(
-				ExceptionLookup?.Concurrency ?? $"Someone else has archived this {Target.EntityName}",
-				e.InnerException
-			);
-		}
-		catch (UniqueConstraintException e) {
-			Log.Error(e, "Archival of {EntityName} violates Unique Constraint", Target.EntityName);
-			throw new DatabaseConflictException(
-				ExceptionLookup?.UniqueConflict ?? $"This {Target.EntityName} has dependencies that need to be archived first",
-				e.InnerException
-			);
-		}
-		catch (CannotInsertNullException e) {
-			var columnName = (string?)e.InnerException?.Data.ReadValueOrDefault("ColumnName");
-			Log.Error(
-				e,
-				"Archival of {EntityName} resulted in a null entry for a non-nullable column ({ColumnName})",
-				Target.EntityName,
-				columnName ?? "N/A"
-			);
-			throw new DatabaseException(ExceptionLookup?.NullInsert ?? $"Cannot archive {Target.EntityName}", e.InnerException);
+			await Context.SaveChangesAsync();
 		}
 		catch (DbUpdateException e) {
-			Log.Error(
-				e,
-				"Database error while archiving {EntityName}: {InnerMessage}",
-				Target.EntityName,
-				e.InnerException?.Message ?? "No Details"
-			);
-			throw new DatabaseException(ExceptionLookup?.Default ?? $"Failed to archive {Target.EntityName}", e.InnerException);
+			throw e.ProcessAsArchive(Target.EntityName, ExceptionLookup);
 		}
 	}
 

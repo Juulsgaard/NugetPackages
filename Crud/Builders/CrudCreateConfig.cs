@@ -1,13 +1,10 @@
 using System.Linq.Expressions;
 using AutoMapper;
-using EntityFramework.Exceptions.Common;
 using Juulsgaard.Crud.Domain.Interfaces;
-using Juulsgaard.Crud.Exceptions;
+using Juulsgaard.Crud.Extensions;
 using Juulsgaard.Crud.Models;
 using Juulsgaard.Tools.Exceptions;
-using Juulsgaard.Tools.Extensions;
 using Microsoft.EntityFrameworkCore;
-using Serilog;
 
 namespace Juulsgaard.Crud.Builders;
 
@@ -122,51 +119,14 @@ public class CrudCreateConfig<TModel, TCreate> where TModel : class
 
 		ModifyFunc?.Invoke(model);
 
+		Target.Set.Add(model);
+
+		if (!WillSave) return model;
 		try {
-			Target.Set.Add(model);
-			if (WillSave) {
-				await Context.SaveChangesAsync();
-			}
-		}
-		catch (DbUpdateConcurrencyException e) {
-			Log.Error(e, "Concurrency error while creating {EntityName}", Target.EntityName);
-			throw new DatabaseConflictException(
-				ExceptionLookup?.Concurrency ?? $"Someone else has edited this {Target.EntityName}",
-				e.InnerException
-			);
-		}
-		catch (UniqueConstraintException e) {
-			Log.Error(e, "Creation of {EntityName} violates Unique Constraint", Target.EntityName);
-			throw new DatabaseConflictException(
-				ExceptionLookup?.UniqueConflict ?? $"This {Target.EntityName} already exists",
-				e.InnerException
-			);
-		}
-		catch (CannotInsertNullException e) {
-			var columnName = (string?)e.InnerException?.Data.ReadValueOrDefault("ColumnName");
-			Log.Error(
-				e,
-				"Tried to insert null in non-nullable field ({ColumnName}) while creating {EntityName}",
-				columnName ?? "N/A",
-				Target.EntityName
-			);
-			throw new DatabaseException(
-				ExceptionLookup?.NullInsert
-			 ?? $"Cannot create {Target.EntityName} with null value{(columnName != null ? $" - {columnName}" : "")}",
-				e.InnerException
-			);
+			await Context.SaveChangesAsync();
 		}
 		catch (DbUpdateException e) {
-			Log.Error(
-				e,
-				"Database error while creating {EntityName}: {InnerMessage}",
-				Target.EntityName,
-				e.InnerException?.Message ?? "No Details"
-			);
-			throw new DatabaseException(
-				ExceptionLookup?.Default ?? $"Failed to create {Target.EntityName}",
-				e.InnerException
-			);
+			throw e.ProcessAsCreate(Target.EntityName, ExceptionLookup);
 		}
 		
 		return model;
