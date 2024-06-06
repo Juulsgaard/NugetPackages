@@ -78,17 +78,33 @@ public class CrudDeleteConfig<TModel> where TModel : class
 	protected async ValueTask Remove(TModel model)
 	{
 		Target.Set.Remove(model);
+		if (UpdateIndex) await UpdateIndices(model);
+	}
 
-		if (UpdateIndex) {
-			var query = Target.Query;
+	private async Task UpdateIndices(TModel model)
+	{
+		var query = Target.Query;
 
-			if (SubSetIdentifier != null) {
-				query = query.Where(SubSetIdentifier(model));
-			}
+		if (SubSetIdentifier != null) {
+			query = query.Where(SubSetIdentifier(model));
+		}
 
-			if (query is IQueryable<ISorted> tempQuery && model is ISorted indexModel) {
-				await tempQuery.Where(x => x.Index > indexModel.Index).ForEachAsync(m => m.Index--);
-			}
+		if (query is not IQueryable<ISorted> tempQuery || model is not ISorted indexModel) return;
+
+		if (Target.Testing || !WillSave)
+		{
+			await tempQuery.Where(x => x.Index > indexModel.Index).ForEachAsync(m => m.Index--);
+		}
+		else
+		{
+			await using var trx = await Target.Context.BeginInnerTransactionAsync();
+			
+			await SaveAndHandleErrors();
+			
+			await tempQuery.Where(x => x.Index > indexModel.Index)
+				.ExecuteUpdateAsync(c => c.SetProperty(x => x.Index, x => x.Index - 1));
+			
+			await trx.CommitAsync();
 		}
 	}
 
@@ -135,14 +151,10 @@ public class CrudDeleteConfig<TModel> where TModel : class
 
 		foreach (var model in models) {
 			await Remove(model);
-			if (UpdateIndex) {
-				await SaveAndHandleErrors();
-			}
+			if (UpdateIndex) await SaveAndHandleErrors();
 		}
-
-		if (!UpdateIndex) {
-			await SaveAndHandleErrors();
-		}
+		
+		await SaveAndHandleErrors();
 
 		await trx.CommitAsync();
 

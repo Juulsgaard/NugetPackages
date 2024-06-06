@@ -96,19 +96,39 @@ public class CrudArchiveConfig<TModel> where TModel : class, IArchivable
 		
 		ModifyFunc?.Invoke(model);
 
-		if (UpdateIndex) {
-			var query = Target.Query;
+		if (UpdateIndex) await ArchiveUpdateIndices(model);
+	}
 
-			if (SubSetIdentifier != null) {
-				query = query.Where(SubSetIdentifier(model));
-			}
+	private async Task ArchiveUpdateIndices(TModel model)
+	{
+		var query = Target.Query;
 
-			if (query is IQueryable<ISorted> tempQuery && model is ISorted indexModel) {
-				if (indexModel.Index < 0) return;
-				await tempQuery.Where(x => x.Index > indexModel.Index).ForEachAsync(m => m.Index--);
-				indexModel.Index = -1;
-			}
+		if (SubSetIdentifier != null) {
+			query = query.Where(SubSetIdentifier(model));
 		}
+
+		if (query is not IQueryable<ISorted> tempQuery || model is not ISorted indexModel) return;
+		if (indexModel.Index < 0) return;
+		
+		var oldIndex = indexModel.Index;
+		indexModel.Index = -1;	
+
+		if (!WillSave || Target.Testing)
+		{
+			await tempQuery.Where(x => x.Index > indexModel.Index).ForEachAsync(m => m.Index--);
+		}
+		else
+		{
+			await using var trx = await Target.Context.BeginInnerTransactionAsync();
+			
+			await SaveAndHandleErrors();
+			
+			await tempQuery.Where(x => x.Index > oldIndex)
+				.ExecuteUpdateAsync(c => c.SetProperty(x => x.Index, x => x.Index - 1));
+
+			await trx.CommitAsync();
+		}
+		
 	}
 	
 	protected async ValueTask Restore(TModel model)
@@ -119,19 +139,27 @@ public class CrudArchiveConfig<TModel> where TModel : class, IArchivable
 		
 		ModifyFunc?.Invoke(model);
 
-		if (UpdateIndex) {
-			var query = Target.Query;
+		if (UpdateIndex) await RestoreUpdateIndices(model);
+	}
+	
+	private async Task RestoreUpdateIndices(TModel model)
+	{
+		var query = Target.Query;
 
-			if (SubSetIdentifier != null) {
-				query = query.Where(SubSetIdentifier(model));
-			}
-
-			if (query is IQueryable<ISorted> tempQuery && model is ISorted indexModel) {
-				if (indexModel.Index >= 0) return;
-				var index = await tempQuery.MaxAsync(x => x.Index) + 1;
-				indexModel.Index = index;
-			}
+		if (SubSetIdentifier != null) {
+			query = query.Where(SubSetIdentifier(model));
 		}
+
+		if (query is not IQueryable<ISorted> tempQuery || model is not ISorted indexModel) return;
+		
+		if (indexModel.Index >= 0) return;
+		
+		var index = await tempQuery
+			.OrderByDescending(f => f.Index)
+			.Select(f => f.Index + 1)
+			.FirstOrDefaultAsync();
+		
+		indexModel.Index = index;
 	}
 
 	/// <summary>
