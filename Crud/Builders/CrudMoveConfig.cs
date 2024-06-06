@@ -151,8 +151,6 @@ public class CrudMoveConfig<TModel> where TModel : class
 			Index = -1;
 		}
 
-		if (Index == oldIndex || Index == oldIndex + 1) return model;
-
 		var query = Target.Query;
 
 		if (SubSetIdentifier != null)
@@ -177,6 +175,9 @@ public class CrudMoveConfig<TModel> where TModel : class
 				Index = max + 1;
 			}
 		}
+		
+		if (Index == oldIndex) return model;
+		if (oldIndex >= 0 && Index == oldIndex + 1) return model;
 		
 		await using var trx = await Context.BeginInnerTransactionAsync();
 		
@@ -220,7 +221,8 @@ public class CrudMoveConfig<TModel> where TModel : class
 	private async Task ExecuteDefault(IQueryable<ISorted> tempQuery, ISorted indexModel, int oldIndex)
 	{
 		
-		if (Index > oldIndex) { // Move to higher index
+		// Move to higher index
+		if (Index > oldIndex) {
 			
 			// Remove elements down into the hole left by the promoted element
 			await tempQuery.Where(x => x.Index > oldIndex)
@@ -275,6 +277,9 @@ public class CrudMoveConfig<TModel> where TModel : class
 		if (Index > max + 1) {
 			Index = max + 1;
 		}
+		
+		if (Index == oldIndex) return;
+		if (oldIndex >= 0 && Index == oldIndex + 1) return;
 		
 		// Remove from sorted list
 		if (Index == -1) {
