@@ -138,22 +138,20 @@ public class CrudMoveConfig<TModel> where TModel : class
 	/// Executes the Move operation
 	/// </summary>
 	/// <returns>The moved model</returns>
-	/// <remarks>This will always save as it's a multi part operation, that required intermediary save operations</remarks>
+	/// <remarks>This will always save as it's a multi part operation, that requires intermediary save operations</remarks>
 	public async Task<TModel> ExecuteAsync()
 	{
 		var model = await Target.FirstAsync();
 
-		if (model is not ISorted indexModel)
-		{
-			return model;
-		}
+		if (model is not ISorted indexModel) return model;
 
 		var oldIndex = indexModel.Index;
-
-		if (Index == oldIndex || Index == oldIndex + 1)
-		{
-			return model;
+		
+		if (Index < 0) {
+			Index = -1;
 		}
+
+		if (Index == oldIndex || Index == oldIndex + 1) return model;
 
 		var query = Target.Query;
 
@@ -162,30 +160,51 @@ public class CrudMoveConfig<TModel> where TModel : class
 			query = query.Where(SubSetIdentifier(model));
 		}
 
-		if (query is not IQueryable<ISorted> tempQuery)
-		{
-			return model;
-		}
+		if (query is not IQueryable<ISorted> tempQuery) return model;
 		
 		if (Target.Testing) {
 			await ExecuteNoSql(tempQuery, indexModel, oldIndex);
 			return model;
 		}
-
-		var max = await tempQuery
-		   .OrderByDescending(x => x.Index)
-		   .Select(x => x.Index + 1)
-		   .FirstOrDefaultAsync();
-
-		if (Index > max + 1) {
-			Index = max + 1;
-		}
 		
-		if (Index < 0) {
-			Index = 0;
+		if (Index > 0) {
+			var max = await tempQuery
+				.OrderByDescending(x => x.Index)
+				.Select(x => x.Index + 1)
+				.FirstOrDefaultAsync();
+
+			if (Index > max + 1) {
+				Index = max + 1;
+			}
 		}
 		
 		await using var trx = await Context.BeginInnerTransactionAsync();
+		
+		// Remove from sorted list
+		if (Index == -1) {
+
+			indexModel.Index = -1;
+			await SaveAndHandleErrors();
+
+			await tempQuery.Where(x => x.Index > oldIndex)
+				.ExecuteUpdateAsync(c => c.SetProperty(x => x.Index, x => x.Index - 1));
+
+			await trx.CommitAsync();
+			return model;
+		} 
+		
+		// Add to sorted list
+		if (oldIndex == -1) {
+			
+			await tempQuery.Where(x => x.Index >= Index)
+				.ExecuteUpdateAsync(c => c.SetProperty(x => x.Index, x => x.Index + 1));
+				
+			indexModel.Index = Index;
+			await SaveAndHandleErrors();
+
+			await trx.CommitAsync();
+			return model;
+		} 
 
 		if (_safeMove) {
 			await ExecuteSafe(tempQuery, indexModel, oldIndex);
@@ -193,27 +212,36 @@ public class CrudMoveConfig<TModel> where TModel : class
 			return model;
 		}
 
-		if (Index > oldIndex) {
-			await tempQuery.Where(x => x.Index > oldIndex)
-			   .Where(x => x.Index < Index)
-			   .ExecuteUpdateAsync(c => c.SetProperty(x => x.Index, x => x.Index - 1));
+		await ExecuteDefault(tempQuery, indexModel, oldIndex);
+		await trx.CommitAsync();
+		return model;
+	}
+
+	private async Task ExecuteDefault(IQueryable<ISorted> tempQuery, ISorted indexModel, int oldIndex)
+	{
+		
+		if (Index > oldIndex) { // Move to higher index
 			
+			// Remove elements down into the hole left by the promoted element
+			await tempQuery.Where(x => x.Index > oldIndex)
+				.Where(x => x.Index < Index)
+				.ExecuteUpdateAsync(c => c.SetProperty(x => x.Index, x => x.Index - 1));
+				
 			indexModel.Index = Index - 1;
 			await SaveAndHandleErrors();
 			
-			await trx.CommitAsync();
-			return model;
+			return;
+			
 		}
 		
+		// Move to lower index
 		await tempQuery.Where(x => x.Index >= Index)
-		   .Where(x => x.Index < oldIndex)
-		   .ExecuteUpdateAsync(c => c.SetProperty(x => x.Index, x => x.Index + 1));
-		
+			.Where(x => x.Index < oldIndex)
+			.ExecuteUpdateAsync(c => c.SetProperty(x => x.Index, x => x.Index + 1));
+
 		indexModel.Index = Index;
 		await SaveAndHandleErrors();
 			
-		await trx.CommitAsync();
-		return model;
 	}
 
 	private async Task ExecuteSafe(IQueryable<ISorted> tempQuery, ISorted indexModel, int oldIndex)
@@ -248,15 +276,34 @@ public class CrudMoveConfig<TModel> where TModel : class
 			Index = max + 1;
 		}
 		
-		if (Index < 0) {
-			Index = 0;
-		}
+		// Remove from sorted list
+		if (Index == -1) {
+
+			indexModel.Index = -1;
+
+			var above = items.Where(x => x.Index > oldIndex).ToList();
+			above.ForEach(x => x.Index--);
+
+			await SaveAndHandleErrors();
+			await trx.CommitAsync();
+			return;
+		} 
+		
+		// Add to sorted list
+		if (oldIndex == -1) {
+			
+			var above = items.Where(x => x.Index >= Index).ToList();
+			above.ForEach(x => x.Index++);
+				
+			indexModel.Index = Index;
+
+			await SaveAndHandleErrors();
+			await trx.CommitAsync();
+			return;
+		} 
 
 		var itemsAbove = items.Where(x => x.Index >= Index).ToList();
-			
-		foreach (var item in itemsAbove) {
-			item.Index++;
-		}
+		itemsAbove.ForEach(x => x.Index++);
 
 		await SaveAndHandleErrors();
 
