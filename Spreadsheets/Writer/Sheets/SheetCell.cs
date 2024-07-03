@@ -12,7 +12,7 @@ namespace Juulsgaard.Spreadsheets.Writer.Sheets;
 public class SheetCell
 {
 	private const double MaxCharWidth = 7;
-	private static readonly double CharPadding = Math.Truncate(128 / SheetCell.MaxCharWidth);
+	private static readonly double CharPadding = Math.Truncate(128 / MaxCharWidth);
 	
 	internal static SheetCell FromCell(SheetRow row, Cell cell)
 	{
@@ -62,7 +62,7 @@ public class SheetCell
 
 	private double CharCountToWidth(int charCount)
 	{
-		return Math.Truncate((charCount * SheetCell.MaxCharWidth) / SheetCell.MaxCharWidth * 256) / 256;
+		return Math.Truncate((charCount * MaxCharWidth) / MaxCharWidth * 256) / 256;
 	}
 
 	#region Write
@@ -79,6 +79,18 @@ public class SheetCell
 		Data.CellValue = new CellValue(index.ToString());
 		Data.DataType = new EnumValue<CellValues>(CellValues.SharedString);
 		Size = CharCountToWidth(value.Length);
+	}
+	
+	/// Write a list of content to the cell
+	public void WriteList(IEnumerable<object>? value)
+	{
+		if (value is null) {
+			Clear();
+			return;
+		}
+		
+		var values = value.Select(x => x.ToString()?.Trim() ?? "").Where(x => x.IsNotEmpty());
+		WriteText(string.Join("; ", values));
 	}
 	
 	/// Write an integer to the cell
@@ -210,6 +222,9 @@ public class SheetCell
 				break;
 			case DateTime dt:
 				WriteDateTime(dt);
+				break;
+			case IEnumerable<object> l:
+				WriteList(l);
 				break;
 			default:
 				WriteText(value.ToString());
