@@ -2,6 +2,7 @@
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Spreadsheet;
 using Juulsgaard.Spreadsheets.Writer.Document;
+using Juulsgaard.Spreadsheets.Writer.Models;
 using Juulsgaard.Tools.Extensions;
 
 namespace Juulsgaard.Spreadsheets.Writer.Sheets;
@@ -58,6 +59,7 @@ public class SheetCell
 		Data.CellValue = null;
 		Data.DataType = null;
 		Data.StyleIndex = null;
+		Data.CellFormula = null;
 	}
 
 	private double CharCountToWidth(int charCount)
@@ -89,7 +91,7 @@ public class SheetCell
 			return;
 		}
 		
-		var values = value.Select(x => x.ToString()?.Trim() ?? "").Where(x => x.IsNotEmpty());
+		var values = value.Select(x => Convert.ToString(x, CultureInfo.InvariantCulture)?.Trim()).Where(x => x.IsNotEmpty());
 		WriteText(string.Join("; ", values));
 	}
 	
@@ -101,7 +103,7 @@ public class SheetCell
 			return;
 		}
 		
-		Data.CellValue = new CellValue(Convert.ToString(value.Value) ?? "");
+		Data.CellValue = new CellValue(Convert.ToString(value.Value, CultureInfo.InvariantCulture));
 		Data.DataType = new EnumValue<CellValues>(CellValues.Number);
 		Data.StyleIndex = Styles.IntegerStyle;
 		Size = CharCountToWidth(value.Value.ToString().Length);
@@ -143,7 +145,7 @@ public class SheetCell
 			return;
 		}
 		
-		var index = StringTable.GetTextId(Convert.ToString(value.Value));
+		var index = StringTable.GetTextId(Convert.ToString(value.Value, CultureInfo.InvariantCulture));
 		Data.CellValue = new CellValue(index.ToString());
 		Data.DataType = new EnumValue<CellValues>(CellValues.SharedString);
 		Size = 7;
@@ -190,6 +192,18 @@ public class SheetCell
 		Data.StyleIndex = Styles.DateTimeStyle;
 		Size = 16;
 	}
+	
+	/// Write a hyperlink to the cell
+	public void WriteLink(ISheetLink? value)
+	{
+		if (value is null) {
+			Clear();
+			return;
+		}
+		
+		Data.CellFormula = new CellFormula($"HYPERLINK(\"{value.Link}\", \"{value.Text}\")");
+		Size = CharCountToWidth(value.Text.Length);
+	}
 
 	/// Write an object to the cell.
 	/// The formatting is based on the underlying type.
@@ -222,6 +236,9 @@ public class SheetCell
 				break;
 			case DateTime dt:
 				WriteDateTime(dt);
+				break;
+			case ISheetLink l:
+				WriteLink(l);
 				break;
 			case IEnumerable<object> l:
 				WriteList(l);
